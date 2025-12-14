@@ -24,11 +24,12 @@
 
     <style>
         body { 
-            background-color: #f8fafc;
+            /* 修改背景色，降低刺眼感 (Slate-100) */
+            background-color: #f1f5f9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
-            color: #1f2937;
+            color: #334155;
             padding-bottom: 40px;
         }
 
@@ -42,7 +43,7 @@
 
         .app-card {
             background: #ffffff;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #e2e8f0;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
             border-radius: 1.5rem;
         }
@@ -51,38 +52,46 @@
         .btn-touch:active { transform: scale(0.96); filter: brightness(0.95); }
 
         .btn-primary {
-            background: linear-gradient(135deg, #059669 0%, #0f766e 100%);
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
             color: white;
-            box-shadow: 0 4px 12px rgba(13, 148, 136, 0.25);
+            box-shadow: 0 4px 6px rgba(5, 150, 105, 0.2);
         }
-        .btn-primary:active { box-shadow: 0 2px 6px rgba(13, 148, 136, 0.2); }
+        .btn-primary:active { box-shadow: 0 2px 4px rgba(5, 150, 105, 0.2); }
 
         .custom-input {
-            border: 2px solid #f3f4f6;
-            background: #f9fafb;
+            border: 2px solid #f1f5f9;
+            background: #f8fafc;
             transition: all 0.2s;
             appearance: none; 
+            color: #334155;
         }
         .custom-input:focus {
             background: #fff;
-            border-color: #059669;
+            border-color: #10b981;
             box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
             outline: none;
         }
 
-        @keyframes modalPop { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-        .modal-anim { animation: modalPop 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        /* Modal Animations */
+        @keyframes modalIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes modalOut { from { opacity: 1; transform: scale(1); } to { opacity: 0; transform: scale(0.95); } }
+        
+        .modal-enter { animation: modalIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+        .modal-exit { animation: modalOut 0.2s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
 
-        .loading-spinner { border: 3px solid #f3f3f3; border-top: 3px solid #059669; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
+        /* Dropdown Animation */
+        @keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        .dropdown-anim { animation: dropIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+        .loading-spinner { border: 3px solid #e2e8f0; border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .badge { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; }
-        .badge-base { background: #f3f4f6; color: #6b7280; }
-        .badge-bonus { background: #d1fae5; color: #059669; }
-        .badge-capped { background: #fee2e2; color: #dc2626; }
-        .badge-excluded { background: #e5e7eb; color: #9ca3af; text-decoration: line-through; }
-        
-        .table-header { font-size: 0.75rem; font-weight: 700; color: #9ca3af; text-transform: uppercase; letter-spacing: 0.05em; }
+        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; }
+        .badge-base { background: #f1f5f9; color: #64748b; }
+        /* 調整綠色更鮮明 */
+        .badge-bonus { background: #dcfce7; color: #15803d; } 
+        .badge-capped { background: #fee2e2; color: #b91c1c; }
+        .badge-excluded { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
     </style>
 </head>
 <body>
@@ -119,25 +128,39 @@
         Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
         Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
         Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>,
-        Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>
+        Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>,
+        LogOut: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
     };
 
-    // --- 通用 Modal 組件 (確保 onCancel/onConfirm 執行路徑正確) ---
-    const Modal = ({ isOpen, title, content, type = 'info', onConfirm, onCancel, confirmText = '確定', cancelText = '取消', inputPlaceholder, inputValue: initialInputValue, editingData }) => {
-        if (!isOpen) return null;
-        const [val, setVal] = useState(initialInputValue || '');
+    // --- 通用 Modal 組件 ---
+    const Modal = ({ isOpen, title, content, type = 'info', isDanger = false, onConfirm, onCancel, confirmText = '確定', cancelText = '取消', inputPlaceholder, inputValue: initialInputValue, editingData }) => {
+        const [isVisible, setIsVisible] = useState(false);
+        const [isClosing, setIsClosing] = useState(false);
+        const [val, setVal] = useState('');
         const [val2, setVal2] = useState('');
         const [processing, setProcessing] = useState(false);
+        const [showPin, setShowPin] = useState(false);
 
-        useEffect(() => { 
-            if (isOpen && initialInputValue) setVal(initialInputValue);
+        useEffect(() => {
+            if (isOpen) {
+                setIsVisible(true);
+                setIsClosing(false);
+                setVal(initialInputValue || '');
+                setVal2('');
+                setProcessing(false);
+                setShowPin(false);
+            } else {
+                setIsClosing(true);
+                const timer = setTimeout(() => setIsVisible(false), 200);
+                return () => clearTimeout(timer);
+            }
         }, [isOpen, initialInputValue]);
 
         const [editForm, setEditForm] = useState({ 
-            date: editingData?.date || new Date().toISOString().substring(0, 10), 
-            merchant: editingData?.merchant || '', 
-            amount: editingData?.amount || 0, 
-            excluded: editingData?.excluded || false 
+            date: new Date().toISOString().substring(0, 10), 
+            merchant: '', 
+            amount: 0, 
+            excluded: false 
         });
 
         useEffect(() => { 
@@ -146,10 +169,12 @@
             }
         }, [isOpen, editingData]);
 
+        if (!isVisible) return null;
 
         const handleConfirm = async () => {
             if (processing) return;
             setProcessing(true);
+            await new Promise(resolve => setTimeout(resolve, 600));
             try {
                 if (type === 'input') await onConfirm(val);
                 else if (type === 'changePin') await onConfirm(val, val2);
@@ -159,40 +184,56 @@
             setProcessing(false);
         };
         
-        // 渲染內容
         const renderContent = () => {
-            if (typeof content === 'string') return <p>{content}</p>;
-            if (type === 'input') return <input type="text" className="custom-input w-full mt-4 p-3 rounded-xl text-lg font-bold text-gray-800" placeholder={inputPlaceholder} value={val} onChange={e => setVal(e.target.value)} autoFocus />;
-            if (type === 'changePin') return (
-                <div className="space-y-3 mt-4">
-                    <div><label className="text-xs font-bold text-gray-500">舊 PIN 碼</label><input type="tel" maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val} onChange={e => setVal(e.target.value.replace(/\D/g, ''))} /></div>
-                    <div><label className="text-xs font-bold text-gray-500">新 PIN 碼</label><input type="tel" maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val2} onChange={e => setVal2(e.target.value.replace(/\D/g, ''))} /></div>
+            return (
+                <div className="space-y-4">
+                    {content && <div className="text-gray-600 leading-relaxed">{content}</div>}
+                    
+                    {type === 'input' && (
+                        <input type="text" className="custom-input w-full p-3 rounded-xl text-lg font-bold text-gray-800" placeholder={inputPlaceholder} value={val} onChange={e => setVal(e.target.value)} autoFocus />
+                    )}
+                    
+                    {type === 'changePin' && (
+                        <div className="space-y-3 relative">
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">舊 PIN 碼</label>
+                                <input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val} onChange={e => setVal(e.target.value.replace(/\D/g, ''))} />
+                            </div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">新 PIN 碼</label>
+                                <input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val2} onChange={e => setVal2(e.target.value.replace(/\D/g, ''))} />
+                            </div>
+                            <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-0 top-6 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">
+                                {showPin ? <Icons.EyeOff/> : <Icons.Eye/>}
+                            </button>
+                        </div>
+                    )}
+                    
+                    {type === 'editTransaction' && (
+                        <div className="space-y-3">
+                            <div><label className="text-xs font-bold text-gray-500">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} /></div>
+                            <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
+                            <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) })} /></div>
+                            <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={editForm.excluded} onChange={e => setEditForm({ ...editForm, excluded: e.target.checked })} />非一般消費</label>
+                        </div>
+                    )}
                 </div>
             );
-            if (type === 'editTransaction') return (
-                <div className="space-y-3 mt-4">
-                    <div><label className="text-xs font-bold text-gray-500">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} /></div>
-                    <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
-                    <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) })} /></div>
-                    <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={editForm.excluded} onChange={e => setEditForm({ ...editForm, excluded: e.target.checked })} />非一般消費</label>
-                </div>
-            );
-            return content;
         };
 
+        const isDangerBtn = type === 'danger' || isDanger;
 
         return (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-gray-900/40 backdrop-blur-sm transition-opacity">
-                <div className="glass-card w-full max-w-sm p-6 modal-anim bg-white border-none shadow-2xl relative z-[101]">
-                    <h3 className={`text-xl font-bold mb-3 ${type === 'danger' ? 'text-red-600' : 'text-gray-800'}`}>{title}</h3>
-                    <div className="text-gray-600 mb-6 text-sm leading-relaxed max-h-[70vh] overflow-y-auto">
+            <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-sm transition-opacity duration-200 ${isClosing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+                <div className={`glass-card w-full max-w-sm p-6 bg-white border-none shadow-2xl relative z-[101] ${isClosing ? 'modal-exit' : 'modal-enter'}`}>
+                    <h3 className={`text-xl font-bold mb-3 ${isDangerBtn ? 'text-red-600' : 'text-gray-800'}`}>{title}</h3>
+                    <div className="mb-6 max-h-[70vh] overflow-y-auto">
                         {renderContent()}
                     </div>
                     <div className="flex gap-3 justify-end">
-                        {/* 修正：確保 onCancel 總是執行 closeModal */}
-                        {type !== 'info' && <button onClick={onCancel} disabled={processing} className="btn-touch px-4 py-2 rounded-xl bg-gray-100 text-gray-500 font-bold text-sm">{cancelText}</button>}
-                        <button onClick={handleConfirm} disabled={processing} className={`btn-touch px-5 py-2 rounded-xl text-white font-bold text-sm shadow-lg flex items-center gap-2 ${type === 'danger' ? 'bg-red-500 shadow-red-200' : 'btn-primary'} ${processing ? 'opacity-70 cursor-not-allowed' : ''}`}>
-                            {processing && <div className="loading-spinner w-4 h-4 border-white border-2"></div>}{confirmText}
+                        {type !== 'info' && <button onClick={onCancel} disabled={processing} className="btn-touch px-4 py-2 rounded-xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100">{cancelText}</button>}
+                        <button onClick={handleConfirm} disabled={processing} className={`btn-touch px-5 py-2 rounded-xl text-white font-bold text-sm shadow-lg flex items-center gap-2 transition-all ${isDangerBtn ? 'bg-red-500 shadow-red-200' : 'btn-primary'} ${processing ? 'opacity-80 cursor-wait pl-4 pr-6' : ''}`}>
+                            {processing && <div className="loading-spinner w-4 h-4 border-white border-2 mr-1"></div>}{confirmText}
                         </button>
                     </div>
                 </div>
@@ -202,15 +243,15 @@
 
     const PrivacyPolicyContent = () => (
         <div className="space-y-4 text-sm text-gray-600 leading-relaxed">
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <p className="font-bold text-gray-800 mb-1">1. 資料存取與安全性</p>
                 <p>本應用程式採用 Google Firebase 服務託管。您的資料（帳號識別碼、交易紀錄）皆以加密方式儲存。我們採用嚴格的資料庫權限規則，確保僅有持有正確 PIN 碼的您本人能存取資料。</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <p className="font-bold text-gray-800 mb-1">2. 資料收集範圍</p>
                 <p>我們僅收集服務運作所需之最小限度資料：使用者自訂之帳號、暱稱及記帳明細。本服務<span className="text-red-500 font-bold">不收集</span>您的真實姓名、身分證字號、信用卡號或位置資訊。</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded-lg border border-gray-100">
+            <div className="p-3 bg-slate-50 rounded-lg border border-slate-100">
                 <p className="font-bold text-gray-800 mb-1">3. 使用者權利</p>
                 <p>您擁有資料的完整控制權，可隨時修改暱稱、清空記帳資料或永久刪除帳號。執行刪除後，資料將從伺服器中永久移除，無法復原。</p>
             </div>
@@ -218,7 +259,6 @@
         </div>
     );
 
-    // --- 登入畫面 ---
     const AuthScreen = ({ onShowPrivacy }) => {
         const [isRegister, setIsRegister] = useState(false);
         const [account, setAccount] = useState('');
@@ -226,10 +266,10 @@
         const [pin, setPin] = useState('');
         const [showPin, setShowPin] = useState(false);
         const [loading, setLoading] = useState(false);
-        const [modal, setModal] = useState({ open: false });
+        const [modal, setModal] = useState({ isOpen: false });
 
-        const showModal = (title, content, type='danger') => setModal(() => ({ open: true, title, content, type, onConfirm: () => setModal(p => ({ ...p, open: false })), confirmText: '確定', onCancel: () => setModal(p => ({ ...p, open: false })) })); // 修正 onCancel
-        const closeModal = () => setModal(p => ({ ...p, open: false }));
+        const showModal = (title, content, type='danger') => setModal(() => ({ isOpen: true, title, content, type, onConfirm: () => setModal(p => ({ ...p, isOpen: false })), confirmText: '確定', onCancel: () => setModal(p => ({ ...p, isOpen: false })) }));
+        const closeModal = () => setModal(p => ({ ...p, isOpen: false }));
 
         const handleAuth = async (e) => {
             e.preventDefault();
@@ -238,6 +278,8 @@
             if (isRegister && !nickname.trim()) return showModal('格式錯誤', '請輸入您的暱稱');
 
             setLoading(true);
+            await new Promise(r => setTimeout(r, 800));
+
             const fakeEmail = `${account.trim()}@cube.local`;
 
             try {
@@ -261,7 +303,7 @@
 
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-50 to-teal-50">
-                <Modal {...modal} isOpen={modal.open} title={modal.title} content={modal.content} type={modal.type} onConfirm={modal.onConfirm} onCancel={closeModal} confirmText="確定" />
+                <Modal {...modal} isOpen={modal.isOpen} title={modal.title} content={modal.content} type={modal.type} onConfirm={modal.onConfirm} onCancel={closeModal} confirmText="確定" />
                 <div className="glass-card w-full max-w-sm p-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 -mt-16 -mr-16 w-48 h-48 bg-emerald-200/40 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-48 h-48 bg-teal-200/40 rounded-full blur-3xl"></div>
@@ -282,7 +324,7 @@
                                 <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-1 block">6位數 PIN</label>
                                 <div className="relative">
                                     <input type={showPin ? "tel" : "password"} inputMode="numeric" maxLength="6" className="custom-input w-full rounded-xl p-3.5 text-center font-mono text-xl tracking-widest text-gray-800" value={pin} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if(val.length<=6) setPin(val); }} />
-                                    <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 p-2 btn-touch">{showPin ? <Icons.EyeOff/> : <Icons.Eye/>}</button>
+                                    <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">{showPin ? <Icons.EyeOff/> : <Icons.Eye/>}</button>
                                 </div>
                             </div>
                             <button type="submit" disabled={loading} className="btn-primary btn-touch w-full py-4 rounded-xl font-bold text-lg mt-4 flex justify-center items-center">{loading ? <div className="loading-spinner border-white border-t-transparent"></div> : (isRegister ? '立即註冊' : '登入')}</button>
@@ -301,10 +343,32 @@
         const [transactions, setTransactions] = useState([]);
         const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().substring(0, 7));
         const [form, setForm] = useState({ date: new Date().toISOString().substring(0, 10), merchant: '', amount: '', excluded: false });
-        const [modal, setModal] = useState({ open: false, type: 'info', title: '', content: '' });
+        
+        const [modal, setModal] = useState({ isOpen: false, type: 'info', title: '', content: '' });
+        
         const [showSettings, setShowSettings] = useState(false);
         const [currentNickname, setCurrentNickname] = useState(user.displayName || '使用者');
         const canvasRef = useRef(null);
+        // 設定選單的 ref，用於點擊外部關閉
+        const settingsRef = useRef(null);
+
+        useEffect(() => {
+            const handleBeforeUnload = (e) => { e.preventDefault(); e.returnValue = ''; };
+            window.addEventListener('beforeunload', handleBeforeUnload);
+            
+            // 點擊外部關閉選單
+            const handleClickOutside = (event) => {
+                if (settingsRef.current && !settingsRef.current.contains(event.target)) {
+                    setShowSettings(false);
+                }
+            };
+            document.addEventListener("mousedown", handleClickOutside);
+
+            return () => {
+                window.removeEventListener('beforeunload', handleBeforeUnload);
+                document.removeEventListener("mousedown", handleClickOutside);
+            };
+        }, []);
 
         useEffect(() => {
             const unsubUser = onSnapshot(doc(db, 'users', user.uid), (docSnap) => { if (docSnap.exists() && docSnap.data().nickname) setCurrentNickname(docSnap.data().nickname); });
@@ -324,15 +388,30 @@
                 base = Math.round(t.amount * 0.003);
                 if(_isQualified) {
                     let raw = Math.round(t.amount * 0.017);
-                    if(_acc < 100) { let rem = 100 - _acc; bonus = Math.min(raw, rem); if(raw > rem) capped = true; } else { capped = true; }
-                    _acc += bonus;
+                    bonus = raw; 
                 }
             }
-            return { ...t, base, bonus, capped };
+            return { ...t, base, bonus };
         }).reverse();
 
         const totalBase = processedList.reduce((acc, t) => acc + t.base, 0);
-        const totalBonus = processedList.reduce((acc, t) => acc + t.bonus, 0);
+        
+        let sumBonusMethodA = 0;
+        processedList.forEach(t => {
+            if(_isQualified && !t.excluded) {
+                let raw = Math.round(t.amount * 0.017);
+                if (sumBonusMethodA < 100) {
+                   let room = 100 - sumBonusMethodA;
+                   sumBonusMethodA += Math.min(raw, room);
+                }
+            }
+        });
+
+        const totalAmountValid = monthlyData.filter(t => !t.excluded).reduce((acc, t) => acc + t.amount, 0);
+        let bonusMethodB = 0;
+        if (_isQualified) {
+            bonusMethodB = Math.min(100, Math.round(totalAmountValid * 0.017));
+        }
 
         useEffect(() => {
             if (!canvasRef.current) return;
@@ -346,21 +425,22 @@
             ctx.clearRect(0,0,W,H);
             
             const drawRing = (x,y,cur,max,c,lbl,sub) => {
-                ctx.beginPath(); ctx.arc(x,y,60,0,Math.PI*2); ctx.strokeStyle='#f3f4f6'; ctx.lineWidth=12; ctx.stroke();
+                ctx.beginPath(); ctx.arc(x,y,55,0,Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=10; ctx.stroke();
                 const pct = Math.min(cur/max,1);
-                if(pct>0){ ctx.beginPath(); ctx.arc(x,y,60,-Math.PI/2,(-Math.PI/2)+(pct*Math.PI*2)); ctx.strokeStyle=c; ctx.lineWidth=12; ctx.lineCap='round'; ctx.stroke(); }
-                ctx.fillStyle='#374151'; ctx.font='bold 36px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(cur,x,y-5);
-                ctx.fillStyle='#9ca3af'; ctx.font='14px sans-serif'; ctx.fillText('/ '+max,x,y+28);
-                ctx.fillStyle=c; ctx.font='bold 16px sans-serif'; ctx.fillText(lbl,x,y+85);
-                ctx.fillStyle='#6b7280'; ctx.font='12px sans-serif'; ctx.fillText(sub,x,y+105);
+                if(pct>0){ ctx.beginPath(); ctx.arc(x,y,55,-Math.PI/2,(-Math.PI/2)+(pct*Math.PI*2)); ctx.strokeStyle=c; ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke(); }
+                ctx.fillStyle='#334155'; ctx.font='bold 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(cur,x,y-5);
+                ctx.fillStyle='#94a3b8'; ctx.font='12px sans-serif'; ctx.fillText('/ '+max,x,y+25);
+                ctx.fillStyle=c; ctx.font='bold 15px sans-serif'; ctx.fillText(lbl,x,y+75);
+                ctx.fillStyle='#64748b'; ctx.font='11px sans-serif'; ctx.fillText(sub,x,y+92);
             };
-            drawRing(W*0.25, H/2-25, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`還差 ${8-_validCount} 筆`);
-            drawRing(W*0.75, H/2-25, totalBonus, 100, totalBonus>=100?'#ef4444':'#10b981', '加碼點數', totalBonus>=100?'已封頂':'未封頂');
-            ctx.beginPath(); ctx.moveTo(W/2,20); ctx.lineTo(W/2,H-20); ctx.strokeStyle='#e5e7eb'; ctx.lineWidth=2; ctx.stroke();
+            const centerY = H/2 - 5;
+            drawRing(W*0.25, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`還差 ${8-_validCount} 筆`);
+            drawRing(W*0.75, centerY, sumBonusMethodA, 100, sumBonusMethodA>=100?'#ef4444':'#10b981', '加碼小樹點', sumBonusMethodA>=100?'已封頂':'未封頂');
+            ctx.beginPath(); ctx.moveTo(W/2,15); ctx.lineTo(W/2,H-15); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1; ctx.stroke();
         }, [transactions, currentMonth]);
 
-        const showModal = (cfg) => setModal(() => ({ ...cfg, open: true }));
-        const closeModal = () => setModal(p => ({ ...p, open: false }));
+        const showModal = (cfg) => setModal(() => ({ ...cfg, isOpen: true }));
+        const closeModal = () => setModal(p => ({ ...p, isOpen: false }));
 
         const addTx = async () => {
             if (!form.merchant || !form.amount) return showModal({ title: '缺資料', content: '請填寫商家與金額', type: 'danger', confirmText: '確定', onConfirm: closeModal, onCancel: null });
@@ -393,50 +473,103 @@
         const changeNickname = () => { showModal({ title: '修改暱稱', content: '請輸入新的暱稱：', type: 'input', inputPlaceholder: currentNickname, inputValue: currentNickname, confirmText: '儲存', cancelText:'取消', onConfirm: async (newVal) => { if(!newVal.trim()) return alert('暱稱不能為空'); await updateProfile(user, { displayName: newVal }); await setDoc(doc(db, 'users', user.uid), { nickname: newVal }, { merge: true }); closeModal(); }, onCancel: closeModal }); };
         const changePin = () => { showModal({ title: '修改 PIN 碼', type: 'changePin', confirmText: '確認修改', cancelText:'取消', onConfirm: async (oldPin, newPin) => { if(!oldPin || !newPin) return alert('請輸入舊 PIN 與新 PIN'); if(newPin.length !== 6) return alert('新 PIN 碼必須是 6 位數字'); try { const credential = EmailAuthProvider.credential(user.email, oldPin); await reauthenticateWithCredential(user, credential); await updatePassword(user, newPin); closeModal(); showModal({ title: '修改成功', content: '您的 PIN 碼已更新。', type: 'info', confirmText: '確定', onConfirm: closeModal }); } catch(e) { if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') alert('舊 PIN 碼錯誤'); else alert('修改失敗：' + e.message); throw e; } }, onCancel: closeModal }); };
         const clearData = () => { showModal({ title: '清空資料', content: '確定要清空所有記帳紀錄嗎？', type: 'danger', confirmText: '確認清空', cancelText:'取消', onConfirm: async () => { const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'records'))); await Promise.all(snapshot.docs.map(d => deleteDoc(d.ref))); closeModal(); }, onCancel: closeModal }); };
-        const deleteAccount = () => { const accName = user.email.split('@')[0]; showModal({ title: '刪除帳號', content: '請輸入您的帳號名稱以確認刪除。', type: 'input', inputPlaceholder: accName, confirmText: '永久刪除', cancelText:'取消', type: 'danger', onConfirm: async (val) => { if (val !== accName) return alert('帳號名稱輸入錯誤'); try { const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'records'))); await Promise.all(snapshot.docs.map(d => deleteDoc(d.ref))); await deleteDoc(doc(db, 'users', user.uid)); await deleteUser(user); } catch (e) { alert('刪除失敗，請重新登入後再試'); } }, onCancel: closeModal }); };
+        
+        const deleteAccount = () => { 
+            const accName = user.email.split('@')[0]; 
+            showModal({ 
+                title: '刪除帳號', 
+                content: `請輸入您的帳號名稱「${accName}」以確認刪除。`, 
+                type: 'input', 
+                isDanger: true, 
+                inputPlaceholder: accName, 
+                confirmText: '永久刪除', 
+                cancelText:'取消', 
+                onConfirm: async (val) => { 
+                    if (val !== accName) return alert('帳號名稱輸入錯誤'); 
+                    try { 
+                        const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'records'))); 
+                        await Promise.all(snapshot.docs.map(d => deleteDoc(d.ref))); 
+                        await deleteDoc(doc(db, 'users', user.uid)); 
+                        await deleteUser(user); 
+                    } catch (e) { 
+                        alert('刪除失敗，請重新登入後再試'); 
+                    } 
+                }, 
+                onCancel: closeModal 
+            }); 
+        };
 
         const monthOptions = [...new Set(transactions.map(t=>t.date.substring(0,7))), new Date().toISOString().substring(0,7)].sort().reverse();
 
         return (
             <div className="container mx-auto max-w-2xl p-4 pb-24">
                 <Modal {...modal} onCancel={closeModal} />
-                <div className="flex justify-between items-center mb-6 pl-2">
+                <div className="flex justify-between items-center mb-6 pl-2 relative z-50">
                     <div className="text-2xl font-black text-gray-800 tracking-tight">{currentNickname}，您好！</div>
-                    <div className="flex gap-2">
-                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition relative z-50 ${showSettings ? 'bg-emerald-100 text-emerald-600' : 'bg-white text-gray-400 shadow-sm border border-gray-100'}`}><Icons.Settings/></button>
-                        <button onClick={onLogout} className="px-5 py-2 bg-white text-emerald-600 text-sm font-bold rounded-full shadow-sm border border-emerald-100 btn-touch">登出</button>
+                    
+                    {/* 優化的設定選單與按鈕容器 */}
+                    <div className="flex gap-2 relative" ref={settingsRef}>
+                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}>
+                            <Icons.Settings/>
+                        </button>
+                        
+                        {showSettings && (
+                            <div className="absolute right-0 top-12 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-[999] dropdown-anim origin-top-right">
+                                <div className="text-[10px] font-bold text-gray-400 px-3 py-2 uppercase tracking-wider">設定選項</div>
+                                <div className="space-y-1">
+                                    <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 transition-colors">
+                                        <span className="p-1.5 bg-emerald-100 rounded-lg text-emerald-600"><Icons.Edit/></span> 修改暱稱
+                                    </button>
+                                    <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-3 transition-colors">
+                                        <span className="p-1.5 bg-violet-100 rounded-lg text-violet-600"><Icons.Key/></span> 修改 PIN 碼
+                                    </button>
+                                    <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-3 transition-colors">
+                                        <span className="p-1.5 bg-blue-100 rounded-lg text-blue-600"><Icons.Shield/></span> 隱私權政策
+                                    </button>
+                                    
+                                    <div className="h-px bg-gray-100 my-1"></div>
+                                    
+                                    <button onClick={() => { clearData(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-3 transition-colors">
+                                        <span className="p-1.5 bg-amber-100 rounded-lg text-amber-600"><Icons.Trash/></span> 清除資料
+                                    </button>
+                                    <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors">
+                                        <span className="p-1.5 bg-red-100 rounded-lg text-red-500"><Icons.Trash/></span> 刪除帳號
+                                    </button>
+                                </div>
+                                
+                                <div className="mt-2 pt-2 border-t border-gray-100">
+                                    <button onClick={onLogout} className="w-full text-center py-2 text-xs font-bold text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
+                                        登出帳號
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
-
-                {showSettings && (
-                    <div className="app-card p-4 mb-6 modal-anim border-l-4 border-emerald-500 relative z-50">
-                        <h3 className="font-bold text-gray-700 mb-3 ml-1">設定與隱私</h3>
-                        <div className="space-y-2">
-                            {/* 修正：確保點擊時setShowSettings(false)並調用showModal */}
-                            <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold text-gray-600 hover:bg-emerald-50 flex items-center gap-2 btn-touch border border-transparent hover:border-emerald-100"><span className="p-1 bg-emerald-100 rounded-lg text-emerald-600"><Icons.Edit/></span> 修改暱稱</button>
-                            <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold text-gray-600 hover:bg-violet-50 flex items-center gap-2 btn-touch border border-transparent hover:border-violet-100"><span className="p-1 bg-violet-100 rounded-lg text-violet-600"><Icons.Key/></span> 修改 PIN 碼</button>
-                            <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-4 py-3 bg-gray-50 rounded-xl text-sm font-bold text-gray-600 hover:bg-gray-100 flex items-center gap-2 btn-touch border border-transparent hover:border-gray-200"><span className="p-1 bg-gray-200 rounded-lg text-gray-500"><Icons.Shield/></span> 查看隱私權政策</button>
-                            <div className="grid grid-cols-2 gap-2 pt-2">
-                                <button onClick={() => { clearData(); setShowSettings(false); }} className="px-4 py-3 bg-amber-50 text-amber-600 rounded-xl text-sm font-bold hover:bg-amber-100 btn-touch">清除資料</button>
-                                <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="px-4 py-3 bg-red-50 text-red-600 rounded-xl text-sm font-bold hover:bg-red-100 btn-touch">刪除帳號</button>
-                            </div>
-                        </div>
-                    </div>
-                )}
                 
-                <div className="app-card p-4 mb-4 flex justify-center">
-                    <canvas ref={canvasRef} style={{width: '100%', maxWidth: '500px'}} height={240} className="w-full h-auto"></canvas>
+                <div className="flex justify-center mb-4">
+                    <canvas ref={canvasRef} style={{width: '100%', maxWidth: '500px'}} height={140} className="w-full h-auto"></canvas>
                 </div>
                 
                 <div className="flex justify-between items-end mb-4 px-2">
-                    <select value={currentMonth} onChange={e=>setCurrentMonth(e.target.value)} className="bg-white border-none py-2 px-4 rounded-xl shadow-sm text-lg font-bold text-gray-700 outline-none">{monthOptions.map(m=><option key={m} value={m}>{m}</option>)}</select>
+                    <select value={currentMonth} onChange={e=>setCurrentMonth(e.target.value)} className="bg-white border-none py-2 px-4 rounded-xl shadow-sm text-lg font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 transition">{monthOptions.map(m=><option key={m} value={m}>{m}</option>)}</select>
                     <div className="text-right">
                         <div className="text-sm text-gray-500 font-bold mb-1">本月預估回饋</div>
-                        <div className="flex items-baseline justify-end gap-2">
-                            <div className="text-xs font-bold text-gray-400">基本 0.3%: <span className="text-gray-600">{totalBase}</span></div>
-                            <div className="text-xs font-bold text-emerald-500">加碼 1.7%: <span className="text-emerald-700 text-lg">{totalBonus}</span></div>
+                        <div className="flex flex-col items-end">
+                            <div className="text-xs font-bold text-gray-500">基本 0.3%: <span className="text-gray-800 text-base">{totalBase} 小樹點</span></div>
+                            <div className="flex gap-4 mt-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
+                                <div className="text-right">
+                                    <div className="text-[10px] text-gray-400 font-bold mb-0.5">逐筆計算 (保守)</div>
+                                    <div className="text-emerald-600 font-bold text-base leading-none">{sumBonusMethodA} <span className="text-[10px]">小樹點</span></div>
+                                </div>
+                                <div className="w-[1px] bg-gray-200"></div>
+                                <div className="text-right">
+                                    <div className="text-[10px] text-gray-400 font-bold mb-0.5">整月總計 (樂觀)</div>
+                                    <div className="text-emerald-600 font-bold text-base leading-none">{bonusMethodB} <span className="text-[10px]">小樹點</span></div>
+                                </div>
+                            </div>
+                            <div className="text-[9px] text-gray-300 mt-1 text-right">*銀行實際計算方式可能略有不同，故提供兩者參考</div>
                         </div>
-                        <div className="text-[10px] text-gray-400 mt-1">*加碼回饋預計於次次月入帳</div>
                     </div>
                 </div>
 
@@ -448,31 +581,33 @@
                     </div>
                     <div className="flex justify-between items-center">
                         <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer select-none"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={form.excluded} onChange={e=>setForm({...form, excluded:e.target.checked})} />非一般消費</label>
-                        <button onClick={addTx} className="btn-primary btn-touch px-8 py-2.5 rounded-xl font-bold text-white shadow-lg shadow-emerald-200">新增</button>
+                        <button onClick={addTx} className="btn-primary btn-touch px-8 py-2.5 rounded-xl font-bold text-white shadow-lg">新增</button>
                     </div>
                 </div>
 
                 <div className="space-y-3">
                     {processedList.length===0 ? <div className="text-center p-8 text-gray-400">尚無資料</div> : processedList.map(t=>(
-                        <div key={t.id} className={`app-card p-4 flex justify-between items-center ${t.excluded ? 'opacity-60 bg-gray-50' : ''}`}>
+                        <div key={t.id} className={`app-card p-4 flex justify-between items-center ${t.excluded ? 'opacity-60 bg-slate-50' : ''}`}>
                             <div className="flex-1 min-w-0">
                                 {/* 日期格式：yyyy/mm/dd */}
-                                <div className="text-xs text-gray-400 mb-0.5">{t.date.replace(/-/g, '/')}</div>
+                                <div className="text-xs text-gray-400 mb-0.5 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
                                 <div className="font-bold text-gray-800 text-lg truncate">{t.merchant}</div>
-                                {t.excluded && <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500">排除計算</span>}
+                                {t.excluded && <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-bold">排除計算</span>}
                             </div>
-                            <div className="text-right flex flex-col items-end mr-4 min-w-[120px]">
-                                <div className="text-xl font-mono font-bold text-gray-700 mb-1">${t.amount}</div>
+                            <div className="text-right flex flex-col items-end mr-4 min-w-[130px]">
+                                {/* 修正：金額字體 font-sans tracking-tight */}
+                                <div className="text-xl font-sans font-bold text-gray-800 mb-1 tracking-tight">${t.amount.toLocaleString()}</div>
                                 {!t.excluded && (
-                                    <div className="flex gap-1.5">
-                                        <span className="badge badge-base">基 {t.base}</span>
-                                        <span className={`badge ${t.capped ? 'badge-capped' : 'badge-bonus'}`}>加 {t.bonus}</span>
+                                    <div className="flex gap-1.5 justify-end flex-wrap">
+                                        <span className="badge badge-base">基本 {t.base} 小樹點</span>
+                                        {/* 加碼樣式優化 */}
+                                        <span className={`badge ${t.bonus > 0 ? 'badge-bonus' : 'badge-bonus'}`}>加碼 {t.bonus} 小樹點</span>
                                     </div>
                                 )}
                             </div>
                             <div className="flex flex-col gap-1">
-                                <button onClick={()=>editTx(t)} className="p-2 text-gray-400 hover:text-blue-500 transition btn-touch bg-gray-50 rounded-full"><Icons.Edit/></button>
-                                <button onClick={()=>delTx(t.id)} className="p-2 text-gray-300 hover:text-red-500 transition btn-touch bg-gray-50 rounded-full"><Icons.Trash/></button>
+                                <button onClick={()=>editTx(t)} className="p-2 text-gray-400 hover:text-blue-500 transition btn-touch bg-slate-50 rounded-full"><Icons.Edit/></button>
+                                <button onClick={()=>delTx(t.id)} className="p-2 text-gray-300 hover:text-red-500 transition btn-touch bg-slate-50 rounded-full"><Icons.Trash/></button>
                             </div>
                         </div>
                     ))}
