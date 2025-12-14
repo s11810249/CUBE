@@ -24,13 +24,12 @@
 
     <style>
         body { 
-            /* 修改背景色，降低刺眼感 (Slate-100) */
             background-color: #f1f5f9;
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             -webkit-tap-highlight-color: transparent;
             min-height: 100vh;
             color: #334155;
-            padding-bottom: 40px;
+            padding-bottom: 100px;
         }
 
         .glass-card {
@@ -83,12 +82,15 @@
         @keyframes dropIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
         .dropdown-anim { animation: dropIn 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 
+        /* Toast Animation */
+        @keyframes toastUp { from { opacity: 0; transform: translate(-50%, 20px); } to { opacity: 1; transform: translate(-50%, 0); } }
+        .toast-anim { animation: toastUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
         .loading-spinner { border: 3px solid #e2e8f0; border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
         .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; }
         .badge-base { background: #f1f5f9; color: #64748b; }
-        /* 調整綠色更鮮明 */
         .badge-bonus { background: #dcfce7; color: #15803d; } 
         .badge-capped { background: #fee2e2; color: #b91c1c; }
         .badge-excluded { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
@@ -125,21 +127,45 @@
         Eye: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
         EyeOff: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07-2.3 2.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
         Trash: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
-        Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>,
+        Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-current"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0 .59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>,
         Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
         Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>,
         Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>,
-        LogOut: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+        LogOut: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>,
+        Plus: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
+        SortAsc: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M11 12h10"/><path d="M11 16h7"/><path d="M11 20h4"/></svg>,
+        SortDesc: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 12h10"/><path d="M11 8h7"/><path d="M11 4h4"/></svg>,
+        Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    };
+
+    // --- Toast 組件 (成功提示框) ---
+    const Toast = ({ show, message }) => {
+        if (!show) return null;
+        return (
+            <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] toast-anim pointer-events-none">
+                <div className="bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg shadow-emerald-200 flex items-center gap-2 font-bold text-sm">
+                    <Icons.Check />
+                    <span>{message}</span>
+                </div>
+            </div>
+        );
     };
 
     // --- 通用 Modal 組件 ---
-    const Modal = ({ isOpen, title, content, type = 'info', isDanger = false, onConfirm, onCancel, confirmText = '確定', cancelText = '取消', inputPlaceholder, inputValue: initialInputValue, editingData }) => {
+    const Modal = ({ isOpen, title, content, type = 'info', isDanger = false, onConfirm, onCancel, confirmText = '確定', cancelText = '取消', inputPlaceholder, inputValue: initialInputValue, editingData, enableDelay = false }) => {
         const [isVisible, setIsVisible] = useState(false);
         const [isClosing, setIsClosing] = useState(false);
         const [val, setVal] = useState('');
         const [val2, setVal2] = useState('');
         const [processing, setProcessing] = useState(false);
         const [showPin, setShowPin] = useState(false);
+
+        const [editForm, setEditForm] = useState({ 
+            date: new Date().toISOString().substring(0, 10), 
+            merchant: '', 
+            amount: '', 
+            excluded: false 
+        });
 
         useEffect(() => {
             if (isOpen) {
@@ -149,36 +175,38 @@
                 setVal2('');
                 setProcessing(false);
                 setShowPin(false);
+                if (editingData) {
+                    setEditForm({ 
+                        date: editingData.date, 
+                        merchant: editingData.merchant, 
+                        amount: editingData.amount, 
+                        excluded: editingData.excluded 
+                    });
+                } else {
+                     setEditForm({ 
+                        date: new Date().toISOString().substring(0, 10), 
+                        merchant: '', 
+                        amount: '', 
+                        excluded: false 
+                    });
+                }
             } else {
                 setIsClosing(true);
                 const timer = setTimeout(() => setIsVisible(false), 200);
                 return () => clearTimeout(timer);
             }
-        }, [isOpen, initialInputValue]);
-
-        const [editForm, setEditForm] = useState({ 
-            date: new Date().toISOString().substring(0, 10), 
-            merchant: '', 
-            amount: 0, 
-            excluded: false 
-        });
-
-        useEffect(() => { 
-            if (isOpen && editingData) {
-                 setEditForm({ date: editingData.date, merchant: editingData.merchant, amount: editingData.amount, excluded: editingData.excluded });
-            }
-        }, [isOpen, editingData]);
+        }, [isOpen, initialInputValue, editingData]);
 
         if (!isVisible) return null;
 
         const handleConfirm = async () => {
             if (processing) return;
             setProcessing(true);
-            await new Promise(resolve => setTimeout(resolve, 600));
+            if (enableDelay) await new Promise(resolve => setTimeout(resolve, 600));
             try {
                 if (type === 'input') await onConfirm(val);
                 else if (type === 'changePin') await onConfirm(val, val2);
-                else if (type === 'editTransaction') await onConfirm(editForm);
+                else if (type === 'editTransaction' || type === 'addTransaction') await onConfirm(editForm);
                 else await onConfirm();
             } catch(e) { console.error(e); }
             setProcessing(false);
@@ -188,32 +216,19 @@
             return (
                 <div className="space-y-4">
                     {content && <div className="text-gray-600 leading-relaxed">{content}</div>}
-                    
-                    {type === 'input' && (
-                        <input type="text" className="custom-input w-full p-3 rounded-xl text-lg font-bold text-gray-800" placeholder={inputPlaceholder} value={val} onChange={e => setVal(e.target.value)} autoFocus />
-                    )}
-                    
+                    {type === 'input' && <input type="text" className="custom-input w-full p-3 rounded-xl text-lg font-bold text-gray-800" placeholder={inputPlaceholder} value={val} onChange={e => setVal(e.target.value)} autoFocus />}
                     {type === 'changePin' && (
                         <div className="space-y-3 relative">
-                            <div>
-                                <label className="text-xs font-bold text-gray-500">舊 PIN 碼</label>
-                                <input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val} onChange={e => setVal(e.target.value.replace(/\D/g, ''))} />
-                            </div>
-                            <div>
-                                <label className="text-xs font-bold text-gray-500">新 PIN 碼</label>
-                                <input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val2} onChange={e => setVal2(e.target.value.replace(/\D/g, ''))} />
-                            </div>
-                            <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-0 top-6 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">
-                                {showPin ? <Icons.EyeOff/> : <Icons.Eye/>}
-                            </button>
+                            <div><label className="text-xs font-bold text-gray-500">舊 PIN 碼</label><input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val} onChange={e => setVal(e.target.value.replace(/\D/g, ''))} /></div>
+                            <div><label className="text-xs font-bold text-gray-500">新 PIN 碼</label><input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val2} onChange={e => setVal2(e.target.value.replace(/\D/g, ''))} /></div>
+                            <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-0 top-6 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">{showPin ? <Icons.EyeOff/> : <Icons.Eye/>}</button>
                         </div>
                     )}
-                    
-                    {type === 'editTransaction' && (
+                    {(type === 'editTransaction' || type === 'addTransaction') && (
                         <div className="space-y-3">
                             <div><label className="text-xs font-bold text-gray-500">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} /></div>
-                            <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
-                            <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) })} /></div>
+                            <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" placeholder="商家名稱" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
+                            <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" placeholder="$" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) || '' })} /></div>
                             <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={editForm.excluded} onChange={e => setEditForm({ ...editForm, excluded: e.target.checked })} />非一般消費</label>
                         </div>
                     )}
@@ -227,9 +242,7 @@
             <div className={`fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/30 backdrop-blur-sm transition-opacity duration-200 ${isClosing ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
                 <div className={`glass-card w-full max-w-sm p-6 bg-white border-none shadow-2xl relative z-[101] ${isClosing ? 'modal-exit' : 'modal-enter'}`}>
                     <h3 className={`text-xl font-bold mb-3 ${isDangerBtn ? 'text-red-600' : 'text-gray-800'}`}>{title}</h3>
-                    <div className="mb-6 max-h-[70vh] overflow-y-auto">
-                        {renderContent()}
-                    </div>
+                    <div className="mb-6 max-h-[70vh] overflow-y-auto">{renderContent()}</div>
                     <div className="flex gap-3 justify-end">
                         {type !== 'info' && <button onClick={onCancel} disabled={processing} className="btn-touch px-4 py-2 rounded-xl bg-gray-50 text-gray-500 font-bold text-sm hover:bg-gray-100">{cancelText}</button>}
                         <button onClick={handleConfirm} disabled={processing} className={`btn-touch px-5 py-2 rounded-xl text-white font-bold text-sm shadow-lg flex items-center gap-2 transition-all ${isDangerBtn ? 'bg-red-500 shadow-red-200' : 'btn-primary'} ${processing ? 'opacity-80 cursor-wait pl-4 pr-6' : ''}`}>
@@ -303,7 +316,7 @@
 
         return (
             <div className="min-h-screen flex flex-col items-center justify-center p-6 bg-gradient-to-br from-emerald-50 to-teal-50">
-                <Modal {...modal} isOpen={modal.isOpen} title={modal.title} content={modal.content} type={modal.type} onConfirm={modal.onConfirm} onCancel={closeModal} confirmText="確定" />
+                <Modal {...modal} isOpen={modal.isOpen} title={modal.title} content={modal.content} type={modal.type} onConfirm={modal.onConfirm} onCancel={closeModal} confirmText="確定" enableDelay={true} />
                 <div className="glass-card w-full max-w-sm p-8 relative overflow-hidden">
                     <div className="absolute top-0 right-0 -mt-16 -mr-16 w-48 h-48 bg-emerald-200/40 rounded-full blur-3xl"></div>
                     <div className="absolute bottom-0 left-0 -mb-16 -ml-16 w-48 h-48 bg-teal-200/40 rounded-full blur-3xl"></div>
@@ -342,28 +355,21 @@
     const MainApp = ({ user, onLogout, onShowPrivacy }) => {
         const [transactions, setTransactions] = useState([]);
         const [currentMonth, setCurrentMonth] = useState(new Date().toISOString().substring(0, 7));
-        const [form, setForm] = useState({ date: new Date().toISOString().substring(0, 10), merchant: '', amount: '', excluded: false });
-        
+        const [toast, setToast] = useState({ show: false, message: '' });
+        const [sortConfig, setSortConfig] = useState({ key: 'date', direction: 'desc' });
         const [modal, setModal] = useState({ isOpen: false, type: 'info', title: '', content: '' });
-        
         const [showSettings, setShowSettings] = useState(false);
         const [currentNickname, setCurrentNickname] = useState(user.displayName || '使用者');
         const canvasRef = useRef(null);
-        // 設定選單的 ref，用於點擊外部關閉
         const settingsRef = useRef(null);
+
+        useEffect(() => { window.scrollTo(0, 0); }, []);
 
         useEffect(() => {
             const handleBeforeUnload = (e) => { e.preventDefault(); e.returnValue = ''; };
             window.addEventListener('beforeunload', handleBeforeUnload);
-            
-            // 點擊外部關閉選單
-            const handleClickOutside = (event) => {
-                if (settingsRef.current && !settingsRef.current.contains(event.target)) {
-                    setShowSettings(false);
-                }
-            };
+            const handleClickOutside = (event) => { if (settingsRef.current && !settingsRef.current.contains(event.target)) setShowSettings(false); };
             document.addEventListener("mousedown", handleClickOutside);
-
             return () => {
                 window.removeEventListener('beforeunload', handleBeforeUnload);
                 document.removeEventListener("mousedown", handleClickOutside);
@@ -377,22 +383,30 @@
             return () => { unsubUser(); unsubTrans(); };
         }, [user]);
 
+        const showToast = (message) => {
+            setToast({ show: true, message });
+            setTimeout(() => { setToast({ show: false, message: '' }); }, 2000);
+        };
+
         const monthlyData = transactions.filter(t => t.date.startsWith(currentMonth));
         let _acc = 0;
         const _validCount = monthlyData.filter(t => !t.excluded).length;
         const _isQualified = _validCount >= 8;
         
-        const processedList = [...monthlyData].sort((a,b)=>a.date.localeCompare(b.date)||a.createdAt-b.createdAt).map(t=>{
-            let base=0, bonus=0, capped=false;
+        const processedList = [...monthlyData].sort((a,b) => {
+            let res = 0;
+            if (sortConfig.key === 'date') res = a.date.localeCompare(b.date);
+            else if (sortConfig.key === 'merchant') res = a.merchant.localeCompare(b.merchant, 'zh-Hant');
+            if (res === 0) res = a.createdAt - b.createdAt;
+            return sortConfig.direction === 'asc' ? res : -res;
+        }).map(t=>{
+            let base=0, bonus=0;
             if(!t.excluded) {
                 base = Math.round(t.amount * 0.003);
-                if(_isQualified) {
-                    let raw = Math.round(t.amount * 0.017);
-                    bonus = raw; 
-                }
+                if(_isQualified) bonus = Math.round(t.amount * 0.017);
             }
             return { ...t, base, bonus };
-        }).reverse();
+        });
 
         const totalBase = processedList.reduce((acc, t) => acc + t.base, 0);
         
@@ -409,9 +423,15 @@
 
         const totalAmountValid = monthlyData.filter(t => !t.excluded).reduce((acc, t) => acc + t.amount, 0);
         let bonusMethodB = 0;
-        if (_isQualified) {
-            bonusMethodB = Math.min(100, Math.round(totalAmountValid * 0.017));
-        }
+        if (_isQualified) bonusMethodB = Math.min(100, Math.round(totalAmountValid * 0.017));
+
+        // 依據實際獲得點數反推剩餘額度
+        // 剩餘點數 = 100 - 目前實際點數
+        const remainingPoints = Math.max(0, 100 - sumBonusMethodA);
+        // 剩餘額度 = 剩餘點數 / 1.7% (四捨五入)
+        const remainingSpend = Math.round(remainingPoints / 0.017);
+        // 預估封頂總消費 = 目前消費 + 剩餘額度
+        const projectedCapSpend = totalAmountValid + remainingSpend;
 
         useEffect(() => {
             if (!canvasRef.current) return;
@@ -421,33 +441,76 @@
             canvasRef.current.width = rect.width * dpr;
             canvasRef.current.height = rect.height * dpr;
             ctx.scale(dpr, dpr);
-            const W = rect.width; const H = rect.height;
+            const W = rect.width;
+            const H = rect.height;
             ctx.clearRect(0,0,W,H);
             
-            const drawRing = (x,y,cur,max,c,lbl,sub) => {
-                ctx.beginPath(); ctx.arc(x,y,55,0,Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=10; ctx.stroke();
+            const radius = Math.min(W/6 - 8, 50);
+            
+            const drawRing = (x, y, cur, max, c, lbl, sub, r) => {
+                ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=8; ctx.stroke();
                 const pct = Math.min(cur/max,1);
-                if(pct>0){ ctx.beginPath(); ctx.arc(x,y,55,-Math.PI/2,(-Math.PI/2)+(pct*Math.PI*2)); ctx.strokeStyle=c; ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke(); }
-                ctx.fillStyle='#334155'; ctx.font='bold 32px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto'; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(cur,x,y-5);
-                ctx.fillStyle='#94a3b8'; ctx.font='12px sans-serif'; ctx.fillText('/ '+max,x,y+25);
-                ctx.fillStyle=c; ctx.font='bold 15px sans-serif'; ctx.fillText(lbl,x,y+75);
-                ctx.fillStyle='#64748b'; ctx.font='11px sans-serif'; ctx.fillText(sub,x,y+92);
+                if(pct>0){ ctx.beginPath(); ctx.arc(x,y,r,-Math.PI/2,(-Math.PI/2)+(pct*Math.PI*2)); ctx.strokeStyle=c; ctx.lineWidth=8; ctx.lineCap='round'; ctx.stroke(); }
+                
+                const titleSize = Math.max(12, r * 0.55);
+                const subSize = Math.max(9, r * 0.22);
+                const lblSize = Math.max(10, r * 0.25);
+
+                ctx.fillStyle='#334155'; ctx.font=`bold ${titleSize}px -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto`; ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(cur,x,y-r*0.1);
+                ctx.fillStyle='#94a3b8'; ctx.font=`${subSize}px sans-serif`; ctx.fillText('/ '+max,x,y+r*0.45);
+                ctx.fillStyle=c; ctx.font=`bold ${lblSize}px sans-serif`; ctx.fillText(lbl,x,y+r*1.4);
+                ctx.fillStyle='#64748b'; ctx.font=`${subSize}px sans-serif`; ctx.fillText(sub,x,y+r*1.8);
             };
-            const centerY = H/2 - 5;
-            drawRing(W*0.25, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`還差 ${8-_validCount} 筆`);
-            drawRing(W*0.75, centerY, sumBonusMethodA, 100, sumBonusMethodA>=100?'#ef4444':'#10b981', '加碼小樹點', sumBonusMethodA>=100?'已封頂':'未封頂');
-            ctx.beginPath(); ctx.moveTo(W/2,15); ctx.lineTo(W/2,H-15); ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1; ctx.stroke();
+
+            const centerY = H/2 - 10;
+            
+            // 1. 合格筆數 (左)
+            drawRing(W * 0.166, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`差 ${8-_validCount} 筆`, radius);
+            
+            // 2. 消費總計 (中) - 使用動態反推的 projectedCapSpend 作為分母
+            drawRing(W * 0.5, centerY, totalAmountValid, projectedCapSpend, '#3b82f6', '本月消費', `餘 $${remainingSpend}`, radius);
+
+            // 3. 加碼回饋 (右)
+            drawRing(W * 0.833, centerY, sumBonusMethodA, 100, sumBonusMethodA>=100?'#ef4444':'#10b981', '加碼回饋', sumBonusMethodA>=100?'已封頂':'未封頂', radius);
+
+            ctx.beginPath(); 
+            ctx.moveTo(W/3, 10); ctx.lineTo(W/3, H-30); 
+            ctx.moveTo(2*W/3, 10); ctx.lineTo(2*W/3, H-30);
+            ctx.strokeStyle='#e2e8f0'; ctx.lineWidth=1; ctx.stroke();
+
         }, [transactions, currentMonth]);
 
         const showModal = (cfg) => setModal(() => ({ ...cfg, isOpen: true }));
         const closeModal = () => setModal(p => ({ ...p, isOpen: false }));
 
-        const addTx = async () => {
-            if (!form.merchant || !form.amount) return showModal({ title: '缺資料', content: '請填寫商家與金額', type: 'danger', confirmText: '確定', onConfirm: closeModal, onCancel: null });
-            await addDoc(collection(db, 'users', user.uid, 'records'), { ...form, amount: parseInt(form.amount), createdAt: Date.now() });
-            setForm({ ...form, merchant: '', amount: '', excluded: false });
+        const handleLogout = () => {
+            showModal({
+                title: '登出確認',
+                content: '您確定要登出嗎？',
+                type: 'danger',
+                confirmText: '登出',
+                onConfirm: async () => { await onLogout(); closeModal(); },
+                onCancel: closeModal
+            });
         };
-        const delTx = (id) => { showModal({ title: '刪除紀錄', content: '確定要刪除這筆交易嗎？', type: 'danger', confirmText: '刪除', cancelText:'取消', onConfirm: async () => { await deleteDoc(doc(db, 'users', user.uid, 'records', id)); closeModal(); }, onCancel: closeModal }); };
+
+        const openAddTxModal = () => {
+            showModal({
+                title: '新增交易',
+                type: 'addTransaction',
+                confirmText: '新增',
+                cancelText: '取消',
+                onConfirm: async (newForm) => {
+                    if (!newForm.merchant || !newForm.amount) return alert('請填寫商家與金額');
+                    await addDoc(collection(db, 'users', user.uid, 'records'), { ...newForm, amount: parseInt(newForm.amount), createdAt: Date.now() });
+                    closeModal();
+                    showToast('新增成功');
+                },
+                onCancel: closeModal
+            });
+        };
+
+        const delTx = (id) => { showModal({ title: '刪除紀錄', content: '確定要刪除這筆交易嗎？', type: 'danger', confirmText: '刪除', cancelText:'取消', onConfirm: async () => { await deleteDoc(doc(db, 'users', user.uid, 'records', id)); closeModal(); showToast('刪除成功'); }, onCancel: closeModal }); };
         
         const editTx = (tx) => {
             showModal({
@@ -465,14 +528,15 @@
                         excluded: newForm.excluded
                     });
                     closeModal();
+                    showToast('修改成功');
                 },
                 onCancel: closeModal
             });
         };
         
-        const changeNickname = () => { showModal({ title: '修改暱稱', content: '請輸入新的暱稱：', type: 'input', inputPlaceholder: currentNickname, inputValue: currentNickname, confirmText: '儲存', cancelText:'取消', onConfirm: async (newVal) => { if(!newVal.trim()) return alert('暱稱不能為空'); await updateProfile(user, { displayName: newVal }); await setDoc(doc(db, 'users', user.uid), { nickname: newVal }, { merge: true }); closeModal(); }, onCancel: closeModal }); };
-        const changePin = () => { showModal({ title: '修改 PIN 碼', type: 'changePin', confirmText: '確認修改', cancelText:'取消', onConfirm: async (oldPin, newPin) => { if(!oldPin || !newPin) return alert('請輸入舊 PIN 與新 PIN'); if(newPin.length !== 6) return alert('新 PIN 碼必須是 6 位數字'); try { const credential = EmailAuthProvider.credential(user.email, oldPin); await reauthenticateWithCredential(user, credential); await updatePassword(user, newPin); closeModal(); showModal({ title: '修改成功', content: '您的 PIN 碼已更新。', type: 'info', confirmText: '確定', onConfirm: closeModal }); } catch(e) { if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') alert('舊 PIN 碼錯誤'); else alert('修改失敗：' + e.message); throw e; } }, onCancel: closeModal }); };
-        const clearData = () => { showModal({ title: '清空資料', content: '確定要清空所有記帳紀錄嗎？', type: 'danger', confirmText: '確認清空', cancelText:'取消', onConfirm: async () => { const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'records'))); await Promise.all(snapshot.docs.map(d => deleteDoc(d.ref))); closeModal(); }, onCancel: closeModal }); };
+        const changeNickname = () => { showModal({ title: '修改暱稱', content: '請輸入新的暱稱：', type: 'input', inputPlaceholder: currentNickname, inputValue: currentNickname, confirmText: '儲存', cancelText:'取消', onConfirm: async (newVal) => { if(!newVal.trim()) return alert('暱稱不能為空'); await updateProfile(user, { displayName: newVal }); await setDoc(doc(db, 'users', user.uid), { nickname: newVal }, { merge: true }); closeModal(); showToast('修改成功'); }, onCancel: closeModal }); };
+        const changePin = () => { showModal({ title: '修改 PIN 碼', type: 'changePin', confirmText: '確認修改', cancelText:'取消', onConfirm: async (oldPin, newPin) => { if(!oldPin || !newPin) return alert('請輸入舊 PIN 與新 PIN'); if(newPin.length !== 6) return alert('新 PIN 碼必須是 6 位數字'); try { const credential = EmailAuthProvider.credential(user.email, oldPin); await reauthenticateWithCredential(user, credential); await updatePassword(user, newPin); closeModal(); showToast('修改成功'); } catch(e) { if(e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password') alert('舊 PIN 碼錯誤'); else alert('修改失敗：' + e.message); throw e; } }, onCancel: closeModal }); };
+        const clearData = () => { showModal({ title: '清空資料', content: '確定要清空所有記帳紀錄嗎？', type: 'danger', confirmText: '確認清空', cancelText:'取消', onConfirm: async () => { const snapshot = await getDocs(query(collection(db, 'users', user.uid, 'records'))); await Promise.all(snapshot.docs.map(d => deleteDoc(d.ref))); closeModal(); showToast('已清空資料'); }, onCancel: closeModal }); };
         
         const deleteAccount = () => { 
             const accName = user.email.split('@')[0]; 
@@ -500,118 +564,89 @@
         };
 
         const monthOptions = [...new Set(transactions.map(t=>t.date.substring(0,7))), new Date().toISOString().substring(0,7)].sort().reverse();
+        
+        const toggleSort = (key) => {
+            setSortConfig(prev => ({
+                key,
+                direction: prev.key === key && prev.direction === 'desc' ? 'asc' : 'desc'
+            }));
+        };
 
         return (
             <div className="container mx-auto max-w-2xl p-4 pb-24">
                 <Modal {...modal} onCancel={closeModal} />
+                <Toast show={toast.show} message={toast.message} />
+                
                 <div className="flex justify-between items-center mb-6 pl-2 relative z-50">
                     <div className="text-2xl font-black text-gray-800 tracking-tight">{currentNickname}，您好！</div>
-                    
-                    {/* 優化的設定選單與按鈕容器 */}
                     <div className="flex gap-2 relative" ref={settingsRef}>
-                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}>
-                            <Icons.Settings/>
-                        </button>
-                        
+                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}><Icons.Settings/></button>
                         {showSettings && (
                             <div className="absolute right-0 top-12 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-[999] dropdown-anim origin-top-right">
                                 <div className="text-[10px] font-bold text-gray-400 px-3 py-2 uppercase tracking-wider">設定選項</div>
                                 <div className="space-y-1">
-                                    <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 transition-colors">
-                                        <span className="p-1.5 bg-emerald-100 rounded-lg text-emerald-600"><Icons.Edit/></span> 修改暱稱
-                                    </button>
-                                    <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-3 transition-colors">
-                                        <span className="p-1.5 bg-violet-100 rounded-lg text-violet-600"><Icons.Key/></span> 修改 PIN 碼
-                                    </button>
-                                    <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-3 transition-colors">
-                                        <span className="p-1.5 bg-blue-100 rounded-lg text-blue-600"><Icons.Shield/></span> 隱私權政策
-                                    </button>
-                                    
+                                    <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-emerald-100 rounded-lg text-emerald-600"><Icons.Edit/></span> 修改暱稱</button>
+                                    <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-violet-100 rounded-lg text-violet-600"><Icons.Key/></span> 修改 PIN 碼</button>
+                                    <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-blue-100 rounded-lg text-blue-600"><Icons.Shield/></span> 隱私權政策</button>
                                     <div className="h-px bg-gray-100 my-1"></div>
-                                    
-                                    <button onClick={() => { clearData(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-3 transition-colors">
-                                        <span className="p-1.5 bg-amber-100 rounded-lg text-amber-600"><Icons.Trash/></span> 清除資料
-                                    </button>
-                                    <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors">
-                                        <span className="p-1.5 bg-red-100 rounded-lg text-red-500"><Icons.Trash/></span> 刪除帳號
-                                    </button>
+                                    <button onClick={() => { clearData(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-amber-100 rounded-lg text-amber-600"><Icons.Trash/></span> 清除資料</button>
+                                    <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-red-100 rounded-lg text-red-500"><Icons.Trash/></span> 刪除帳號</button>
                                 </div>
-                                
-                                <div className="mt-2 pt-2 border-t border-gray-100">
-                                    <button onClick={onLogout} className="w-full text-center py-2 text-xs font-bold text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">
-                                        登出帳號
-                                    </button>
-                                </div>
+                                <div className="mt-2 pt-2 border-t border-gray-100"><button onClick={handleLogout} className="w-full text-center py-2 text-xs font-bold text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">登出帳號</button></div>
                             </div>
                         )}
                     </div>
                 </div>
                 
-                <div className="flex justify-center mb-4">
-                    <canvas ref={canvasRef} style={{width: '100%', maxWidth: '500px'}} height={140} className="w-full h-auto"></canvas>
+                <div className="flex justify-center mb-8">
+                    <canvas ref={canvasRef} style={{width: '100%', maxWidth: '500px'}} height={160} className="w-full h-auto"></canvas>
                 </div>
                 
                 <div className="flex justify-between items-end mb-4 px-2">
-                    <select value={currentMonth} onChange={e=>setCurrentMonth(e.target.value)} className="bg-white border-none py-2 px-4 rounded-xl shadow-sm text-lg font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 transition">{monthOptions.map(m=><option key={m} value={m}>{m}</option>)}</select>
+                    <select value={currentMonth} onChange={e=>setCurrentMonth(e.target.value)} className="bg-white border-none py-2 px-4 rounded-xl shadow-sm text-lg font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 transition">{monthOptions.map(m=><option key={m} value={m}>{m.replace('-', '/')}</option>)}</select>
                     <div className="text-right">
                         <div className="text-sm text-gray-500 font-bold mb-1">本月預估回饋</div>
                         <div className="flex flex-col items-end">
                             <div className="text-xs font-bold text-gray-500">基本 0.3%: <span className="text-gray-800 text-base">{totalBase} 小樹點</span></div>
                             <div className="flex gap-4 mt-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                                <div className="text-right">
-                                    <div className="text-[10px] text-gray-400 font-bold mb-0.5">逐筆計算 (保守)</div>
-                                    <div className="text-emerald-600 font-bold text-base leading-none">{sumBonusMethodA} <span className="text-[10px]">小樹點</span></div>
-                                </div>
+                                <div className="text-right"><div className="text-[10px] text-gray-400 font-bold mb-0.5">逐筆計算 (保守)</div><div className="text-emerald-600 font-bold text-base leading-none">{sumBonusMethodA} <span className="text-[10px]">小樹點</span></div></div>
                                 <div className="w-[1px] bg-gray-200"></div>
-                                <div className="text-right">
-                                    <div className="text-[10px] text-gray-400 font-bold mb-0.5">整月總計 (樂觀)</div>
-                                    <div className="text-emerald-600 font-bold text-base leading-none">{bonusMethodB} <span className="text-[10px]">小樹點</span></div>
-                                </div>
+                                <div className="text-right"><div className="text-[10px] text-gray-400 font-bold mb-0.5">整月總計 (樂觀)</div><div className="text-emerald-600 font-bold text-base leading-none">{bonusMethodB} <span className="text-[10px]">小樹點</span></div></div>
                             </div>
                             <div className="text-[9px] text-gray-300 mt-1 text-right">*銀行實際計算方式可能略有不同，故提供兩者參考</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="app-card p-5 mb-6">
-                    <div className="flex flex-col gap-4 mb-4 md:grid md:grid-cols-12 md:gap-3">
-                        <div className="md:col-span-4"><label className="text-xs font-bold text-gray-400 ml-1 mb-1 block">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl h-[46px]" value={form.date} onChange={e=>setForm({...form, date:e.target.value})} /></div>
-                        <div className="md:col-span-5"><label className="text-xs font-bold text-gray-400 ml-1 mb-1 block">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl h-[46px]" placeholder="商家" value={form.merchant} onChange={e=>setForm({...form, merchant:e.target.value})} /></div>
-                        <div className="md:col-span-3"><label className="text-xs font-bold text-gray-400 ml-1 mb-1 block">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl h-[46px]" placeholder="$" value={form.amount} onChange={e=>setForm({...form, amount:e.target.value})} /></div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                        <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer select-none"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={form.excluded} onChange={e=>setForm({...form, excluded:e.target.checked})} />非一般消費</label>
-                        <button onClick={addTx} className="btn-primary btn-touch px-8 py-2.5 rounded-xl font-bold text-white shadow-lg">新增</button>
-                    </div>
+                <div className="flex items-center gap-3 mb-4 px-2">
+                     <button onClick={() => toggleSort('date')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'date' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>日期 {sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
+                     <button onClick={() => toggleSort('merchant')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'merchant' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>商家 {sortConfig.key === 'merchant' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
                 </div>
 
                 <div className="space-y-3">
                     {processedList.length===0 ? <div className="text-center p-8 text-gray-400">尚無資料</div> : processedList.map(t=>(
-                        <div key={t.id} className={`app-card p-4 flex justify-between items-center ${t.excluded ? 'opacity-60 bg-slate-50' : ''}`}>
-                            <div className="flex-1 min-w-0">
-                                {/* 日期格式：yyyy/mm/dd */}
-                                <div className="text-xs text-gray-400 mb-0.5 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
-                                <div className="font-bold text-gray-800 text-lg truncate">{t.merchant}</div>
-                                {t.excluded && <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-bold">排除計算</span>}
-                            </div>
-                            <div className="text-right flex flex-col items-end mr-4 min-w-[130px]">
-                                {/* 修正：金額字體 font-sans tracking-tight */}
-                                <div className="text-xl font-sans font-bold text-gray-800 mb-1 tracking-tight">${t.amount.toLocaleString()}</div>
-                                {!t.excluded && (
-                                    <div className="flex gap-1.5 justify-end flex-wrap">
-                                        <span className="badge badge-base">基本 {t.base} 小樹點</span>
-                                        {/* 加碼樣式優化 */}
-                                        <span className={`badge ${t.bonus > 0 ? 'badge-bonus' : 'badge-bonus'}`}>加碼 {t.bonus} 小樹點</span>
+                        <div key={t.id} className={`app-card p-4 ${t.excluded ? 'opacity-60 bg-slate-50' : ''}`}>
+                            <div className="flex flex-col gap-2">
+                                <div className="flex justify-between items-start">
+                                    <div className="text-xs text-gray-400 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
+                                    <div className="flex gap-2">
+                                        <button onClick={()=>editTx(t)} className="text-gray-400 hover:text-blue-500 transition btn-touch"><Icons.Edit/></button>
+                                        <button onClick={()=>delTx(t.id)} className="text-gray-300 hover:text-red-500 transition btn-touch"><Icons.Trash/></button>
                                     </div>
-                                )}
-                            </div>
-                            <div className="flex flex-col gap-1">
-                                <button onClick={()=>editTx(t)} className="p-2 text-gray-400 hover:text-blue-500 transition btn-touch bg-slate-50 rounded-full"><Icons.Edit/></button>
-                                <button onClick={()=>delTx(t.id)} className="p-2 text-gray-300 hover:text-red-500 transition btn-touch bg-slate-50 rounded-full"><Icons.Trash/></button>
+                                </div>
+                                <div className="flex justify-between items-center gap-4">
+                                    <div className="font-bold text-gray-800 text-lg break-words flex-1 leading-tight">{t.merchant}</div>
+                                    <div className="text-xl font-sans font-bold text-gray-800 tracking-tight whitespace-nowrap">${t.amount.toLocaleString()}</div>
+                                </div>
+                                <div className="flex items-center gap-2 mt-1">
+                                    {t.excluded ? <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-bold">排除計算</span> : <div className="flex gap-1.5 flex-wrap"><span className="badge badge-base">基本 {t.base} 小樹點</span><span className="badge badge-bonus">加碼 {t.bonus} 小樹點</span></div>}
+                                </div>
                             </div>
                         </div>
                     ))}
                 </div>
+
+                <button onClick={openAddTxModal} className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-xl shadow-emerald-200 flex items-center justify-center btn-touch z-50 hover:bg-emerald-700 transition-colors"><Icons.Plus /></button>
             </div>
         );
     };
