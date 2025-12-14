@@ -11,6 +11,9 @@
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
 
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
     <!-- Firebase SDK -->
     <script type="importmap">
       {
@@ -128,39 +131,26 @@
     const db = getFirestore(app);
     const { useState, useEffect, useRef } = React;
 
-    // 消費類別定義
+    // 消費類別定義 (使用 Font Awesome class)
     const CATEGORIES = [
-        { id: 'general', name: '一般消費', icon: '🛒', noBonus: false, noBase: false },
-        { id: 'dining', name: '餐飲美食', icon: '🍽️', noBonus: false, noBase: false },
-        { id: 'transport', name: '交通運輸', icon: '🚇', noBonus: false, noBase: false },
-        { id: 'online', name: '網購電商', icon: '💻', noBonus: false, noBase: false },
-        { id: 'market', name: '超市量販', icon: '🥦', noBonus: false, noBase: false },
-        { id: 'cvs', name: '便利商店', icon: '🏪', noBonus: false, noBase: false },
-        { id: 'fun', name: '娛樂休閒', icon: '🎮', noBonus: false, noBase: false },
-        { id: 'gas', name: '加油停車', icon: '⛽', noBonus: false, noBase: false },
-        { id: 'medical', name: '醫療保健', icon: '💊', noBonus: false, noBase: false },
-        { id: 'edu', name: '教育學習', icon: '📚', noBonus: false, noBase: false },
-        { id: 'dept', name: '百貨購物', icon: '🛍️', noBonus: true, noBase: false },
-        { id: 'foodcourt', name: '美食街', icon: '🍜', noBonus: true, noBase: false },
-        { id: 'delivery', name: '外送平台', icon: '🛵', noBonus: true, noBase: false },
-        { id: 'overseas', name: '海外消費', icon: '✈️', noBonus: true, noBase: false },
-        { id: 'bill', name: '繳費/稅', icon: '🧾', noBonus: true, noBase: true },
+        { id: 'general', name: '一般消費', icon: 'fa-solid fa-cart-shopping', noBonus: false, noBase: false },
+        { id: 'dining', name: '餐飲美食', icon: 'fa-solid fa-utensils', noBonus: false, noBase: false },
+        { id: 'transport', name: '交通運輸', icon: 'fa-solid fa-train-subway', noBonus: false, noBase: false },
+        { id: 'online', name: '網購電商', icon: 'fa-solid fa-globe', noBonus: false, noBase: false },
+        { id: 'market', name: '超市量販', icon: 'fa-solid fa-basket-shopping', noBonus: false, noBase: false },
+        { id: 'cvs', name: '便利商店', icon: 'fa-solid fa-store', noBonus: false, noBase: false },
+        { id: 'fun', name: '娛樂休閒', icon: 'fa-solid fa-gamepad', noBonus: false, noBase: false },
+        { id: 'gas', name: '加油停車', icon: 'fa-solid fa-gas-pump', noBonus: false, noBase: false },
+        { id: 'medical', name: '醫療保健', icon: 'fa-solid fa-notes-medical', noBonus: false, noBase: false },
+        { id: 'edu', name: '教育學習', icon: 'fa-solid fa-graduation-cap', noBonus: false, noBase: false },
+        // 無加碼 (1.7%) 但有基本 (0.3%)
+        { id: 'dept', name: '百貨購物', icon: 'fa-solid fa-bag-shopping', noBonus: true, noBase: false },
+        { id: 'foodcourt', name: '美食街', icon: 'fa-solid fa-bowl-food', noBonus: true, noBase: false },
+        { id: 'delivery', name: '外送平台', icon: 'fa-solid fa-motorcycle', noBonus: true, noBase: false },
+        { id: 'overseas', name: '海外消費', icon: 'fa-solid fa-plane', noBonus: true, noBase: false },
+        // 完全排除 (無0.3% 也無 1.7%)
+        { id: 'bill', name: '繳費/稅', icon: 'fa-solid fa-file-invoice-dollar', noBonus: true, noBase: true },
     ];
-
-    const Icons = {
-        Eye: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
-        EyeOff: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07-2.3 2.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
-        Trash: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
-        Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-current"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0 .59-.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>,
-        Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
-        Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>,
-        Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>,
-        LogOut: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>,
-        Plus: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>,
-        SortAsc: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/><path d="M11 12h10"/><path d="M11 16h7"/><path d="M11 20h4"/></svg>,
-        SortDesc: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 16 4 4 4-4"/><path d="M7 20V4"/><path d="M11 12h10"/><path d="M11 8h7"/><path d="M11 4h4"/></svg>,
-        Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
-    };
 
     // --- Toast 組件 (成功提示框) ---
     const Toast = ({ show, message }) => {
@@ -168,7 +158,7 @@
         return (
             <div className="fixed bottom-10 left-1/2 -translate-x-1/2 z-[200] toast-anim pointer-events-none">
                 <div className="bg-emerald-600 text-white px-6 py-3 rounded-full shadow-lg shadow-emerald-200 flex items-center gap-2 font-bold text-sm">
-                    <Icons.Check />
+                    <i className="fa-solid fa-check"></i>
                     <span>{message}</span>
                 </div>
             </div>
@@ -234,8 +224,8 @@
                 setEditForm(prev => ({
                     ...prev,
                     category: catId,
-                    excluded: cat.noBase, // 是否無基本回饋
-                    noBonus: cat.noBonus  // 是否無加碼回饋
+                    excluded: cat.noBase,
+                    noBonus: cat.noBonus
                 }));
             }
         };
@@ -264,7 +254,9 @@
                         <div className="space-y-3 relative">
                             <div><label className="text-xs font-bold text-gray-500">舊 PIN 碼</label><input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val} onChange={e => setVal(e.target.value.replace(/\D/g, ''))} /></div>
                             <div><label className="text-xs font-bold text-gray-500">新 PIN 碼</label><input type={showPin ? "tel" : "password"} maxLength="6" className="custom-input w-full p-2.5 rounded-xl text-center text-lg font-mono tracking-widest" value={val2} onChange={e => setVal2(e.target.value.replace(/\D/g, ''))} /></div>
-                            <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-0 top-6 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">{showPin ? <Icons.EyeOff/> : <Icons.Eye/>}</button>
+                            <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-0 top-6 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">
+                                <i className={`fa-regular ${showPin ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                            </button>
                         </div>
                     )}
                     {(type === 'editTransaction' || type === 'addTransaction') && (
@@ -272,9 +264,14 @@
                             <div><label className="text-xs font-bold text-gray-500">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} /></div>
                             <div>
                                 <label className="text-xs font-bold text-gray-500">消費類別</label>
-                                <select className="custom-input w-full p-2.5 rounded-xl" value={editForm.category} onChange={e => handleCategoryChange(e.target.value)}>
-                                    {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
-                                </select>
+                                <div className="relative">
+                                    <select className="custom-input w-full p-2.5 rounded-xl appearance-none" value={editForm.category} onChange={e => handleCategoryChange(e.target.value)}>
+                                        {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
+                                    </select>
+                                    <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                                        <i className="fa-solid fa-chevron-down text-xs"></i>
+                                    </div>
+                                </div>
                             </div>
                             <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" placeholder="商家名稱" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
                             <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" placeholder="$" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) || '' })} /></div>
@@ -392,14 +389,16 @@
                                 <label className="text-xs font-bold text-gray-500 uppercase ml-1 mb-1 block">6位數 PIN</label>
                                 <div className="relative">
                                     <input type={showPin ? "tel" : "password"} inputMode="numeric" maxLength="6" className="custom-input w-full rounded-xl p-3.5 text-center font-mono text-xl tracking-widest text-gray-800" value={pin} onChange={e => { const val = e.target.value.replace(/\D/g, ''); if(val.length<=6) setPin(val); }} />
-                                    <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">{showPin ? <Icons.EyeOff/> : <Icons.Eye/>}</button>
+                                    <button type="button" onClick={() => setShowPin(!showPin)} className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-emerald-600 w-10 h-10 flex items-center justify-center transition-colors rounded-full active:bg-gray-100">
+                                        <i className={`fa-regular ${showPin ? 'fa-eye-slash' : 'fa-eye'}`}></i>
+                                    </button>
                                 </div>
                             </div>
                             <button type="submit" disabled={loading} className="btn-primary btn-touch w-full py-4 rounded-xl font-bold text-lg mt-4 flex justify-center items-center">{loading ? <div className="loading-spinner border-white border-t-transparent"></div> : (isRegister ? '立即註冊' : '登入')}</button>
                         </form>
                         <div className="mt-8 text-center space-y-4">
                             <button onClick={() => { setIsRegister(!isRegister); setPin(''); setShowPin(false); }} className="text-sm font-bold text-gray-500 hover:text-emerald-600 transition btn-touch">{isRegister ? '已有帳號？返回登入' : '第一次使用？建立新帳號'}</button>
-                            <div><button onClick={onShowPrivacy} className="text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto btn-touch"><Icons.Shield/> 隱私權政策</button></div>
+                            <div><button onClick={onShowPrivacy} className="text-xs text-gray-400 hover:text-gray-600 flex items-center justify-center gap-1 mx-auto btn-touch"><i className="fa-solid fa-shield-halved mr-1"></i> 隱私權政策</button></div>
                         </div>
                     </div>
                 </div>
@@ -415,7 +414,7 @@
         const [modal, setModal] = useState({ isOpen: false, type: 'info', title: '', content: '' });
         const [showSettings, setShowSettings] = useState(false);
         const [currentNickname, setCurrentNickname] = useState(user.displayName || '使用者');
-        const [filterCategory, setFilterCategory] = useState('all'); // 新增：類別篩選狀態
+        const [filterCategory, setFilterCategory] = useState('all');
         const canvasRef = useRef(null);
         const settingsRef = useRef(null);
 
@@ -450,9 +449,7 @@
         const _validCount = monthlyData.filter(t => !t.excluded).length;
         const _isQualified = _validCount >= 8;
         
-        // 篩選與排序邏輯
         const processedList = [...monthlyData]
-            // 新增：類別篩選
             .filter(t => filterCategory === 'all' || (t.category || 'general') === filterCategory)
             .sort((a,b) => {
                 let res = 0;
@@ -466,7 +463,7 @@
                 if (!t.excluded) {
                     base = Math.round(t.amount * 0.003);
                 }
-                // 單筆預估加碼 (僅顯示用，不計入總數)
+                // 單筆預估加碼
                 let estimateBonus = 0;
                 if (!t.excluded && !t.noBonus) {
                     estimateBonus = Math.round(t.amount * 0.017);
@@ -476,7 +473,7 @@
 
         const totalBase = processedList.reduce((acc, t) => acc + t.base, 0);
         
-        // 加碼回饋計算 (整月總額制) - 不受下方篩選器影響，始終顯示當月總覽
+        // 加碼回饋計算 (整月總額制)
         const bonusEligibleAmount = monthlyData
             .filter(t => !t.excluded && !t.noBonus)
             .reduce((acc, t) => acc + t.amount, 0);
@@ -486,7 +483,7 @@
             totalBonus = Math.min(100, Math.round(bonusEligibleAmount * 0.017));
         }
 
-        const MAX_BONUS_SPEND = 5883; // $5883 * 1.7% ~= 100.01
+        const MAX_BONUS_SPEND = 5883; 
         const remainingSpend = Math.max(0, MAX_BONUS_SPEND - bonusEligibleAmount);
 
         useEffect(() => {
@@ -520,13 +517,8 @@
 
             const centerY = H/2 - 10;
             
-            // 1. 合格筆數 (左)
             drawRing(W * 0.166, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`差 ${8-_validCount} 筆`, radius);
-            
-            // 2. 加碼消費進度 (中)
             drawRing(W * 0.5, centerY, bonusEligibleAmount, MAX_BONUS_SPEND, '#3b82f6', '加碼消費', `餘 $${remainingSpend}`, radius);
-
-            // 3. 加碼回饋點數 (右)
             drawRing(W * 0.833, centerY, totalBonus, 100, totalBonus>=100?'#ef4444':'#10b981', '加碼回饋', totalBonus>=100?'已封頂':'未封頂', radius);
 
             ctx.beginPath(); 
@@ -561,8 +553,7 @@
                     await addDoc(collection(db, 'users', user.uid, 'records'), { ...newForm, amount: parseInt(newForm.amount), createdAt: Date.now() });
                     closeModal();
                     showToast('新增成功');
-                    // 恢復置頂功能
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    window.scrollTo({ top: 0, behavior: 'smooth' }); // 置頂
                 },
                 onCancel: closeModal
             });
@@ -640,17 +631,17 @@
                 <div className="flex justify-between items-center mb-6 pl-2 relative z-50">
                     <div className="text-2xl font-black text-gray-800 tracking-tight">{currentNickname}，您好！</div>
                     <div className="flex gap-2 relative" ref={settingsRef}>
-                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}><Icons.Settings/></button>
+                        <button onClick={() => setShowSettings(!showSettings)} className={`p-2.5 rounded-full btn-touch transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}><i className="fa-solid fa-gear text-lg"></i></button>
                         {showSettings && (
                             <div className="absolute right-0 top-12 w-64 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 z-[999] dropdown-anim origin-top-right">
                                 <div className="text-[10px] font-bold text-gray-400 px-3 py-2 uppercase tracking-wider">設定選項</div>
                                 <div className="space-y-1">
-                                    <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-emerald-100 rounded-lg text-emerald-600"><Icons.Edit/></span> 修改暱稱</button>
-                                    <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-violet-100 rounded-lg text-violet-600"><Icons.Key/></span> 修改 PIN 碼</button>
-                                    <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-blue-100 rounded-lg text-blue-600"><Icons.Shield/></span> 隱私權政策</button>
+                                    <button onClick={() => { changeNickname(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-emerald-50 hover:text-emerald-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-emerald-100 rounded-lg text-emerald-600"><i className="fa-solid fa-pen-to-square"></i></span> 修改暱稱</button>
+                                    <button onClick={() => { changePin(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-violet-50 hover:text-violet-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-violet-100 rounded-lg text-violet-600"><i className="fa-solid fa-key"></i></span> 修改 PIN 碼</button>
+                                    <button onClick={() => { onShowPrivacy(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-blue-50 hover:text-blue-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-blue-100 rounded-lg text-blue-600"><i className="fa-solid fa-shield-halved"></i></span> 隱私權政策</button>
                                     <div className="h-px bg-gray-100 my-1"></div>
-                                    <button onClick={() => { clearData(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-amber-100 rounded-lg text-amber-600"><Icons.Trash/></span> 清除資料</button>
-                                    <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-red-100 rounded-lg text-red-500"><Icons.Trash/></span> 刪除帳號</button>
+                                    <button onClick={() => { clearData(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:bg-amber-50 hover:text-amber-700 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-amber-100 rounded-lg text-amber-600"><i className="fa-solid fa-trash-can"></i></span> 清除資料</button>
+                                    <button onClick={() => { deleteAccount(); setShowSettings(false); }} className="w-full text-left px-3 py-2.5 rounded-xl text-sm font-bold text-red-600 hover:bg-red-50 flex items-center gap-3 transition-colors"><span className="p-1.5 bg-red-100 rounded-lg text-red-500"><i className="fa-solid fa-trash-can"></i></span> 刪除帳號</button>
                                 </div>
                                 <div className="mt-2 pt-2 border-t border-gray-100"><button onClick={handleLogout} className="w-full text-center py-2 text-xs font-bold text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-50 transition">登出帳號</button></div>
                             </div>
@@ -677,25 +668,15 @@
                 </div>
 
                 <div className="flex items-center gap-3 mb-2 px-2">
-                     <button onClick={() => toggleSort('date')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'date' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>日期 {sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
-                     <button onClick={() => toggleSort('merchant')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'merchant' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>商家 {sortConfig.key === 'merchant' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
+                     <button onClick={() => toggleSort('date')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'date' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>日期 <i className={`fa-solid ${sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`}></i></button>
+                     <button onClick={() => toggleSort('merchant')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'merchant' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>商家 <i className={`fa-solid ${sortConfig.key === 'merchant' ? (sortConfig.direction === 'asc' ? 'fa-sort-up' : 'fa-sort-down') : 'fa-sort'}`}></i></button>
                 </div>
 
-                {/* 類別篩選列 */}
                 <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-2 no-scrollbar" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
-                    <button
-                        onClick={() => setFilterCategory('all')}
-                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${filterCategory === 'all' ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}
-                    >
-                        全部
-                    </button>
+                    <button onClick={() => setFilterCategory('all')} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${filterCategory === 'all' ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}>全部</button>
                     {CATEGORIES.map(c => (
-                        <button
-                            key={c.id}
-                            onClick={() => setFilterCategory(c.id)}
-                            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1 ${filterCategory === c.id ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}
-                        >
-                            <span>{c.icon}</span> {c.name}
+                        <button key={c.id} onClick={() => setFilterCategory(c.id)} className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1 ${filterCategory === c.id ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}>
+                            <i className={c.icon}></i> {c.name}
                         </button>
                     ))}
                 </div>
@@ -707,11 +688,11 @@
                                 <div className="flex justify-between items-start">
                                     <div className="flex items-center gap-2">
                                         <div className="text-xs text-gray-400 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
-                                        <span className="text-xs">{CATEGORIES.find(c => c.id === (t.category || 'general'))?.icon}</span>
+                                        <span className="text-xs text-gray-500"><i className={CATEGORIES.find(c => c.id === (t.category || 'general'))?.icon}></i></span>
                                     </div>
                                     <div className="flex gap-2">
-                                        <button onClick={()=>editTx(t)} className="text-gray-400 hover:text-blue-500 transition btn-touch"><Icons.Edit/></button>
-                                        <button onClick={()=>delTx(t.id)} className="text-gray-300 hover:text-red-500 transition btn-touch"><Icons.Trash/></button>
+                                        <button onClick={()=>editTx(t)} className="text-gray-400 hover:text-blue-500 transition btn-touch"><i className="fa-solid fa-pen"></i></button>
+                                        <button onClick={()=>delTx(t.id)} className="text-gray-300 hover:text-red-500 transition btn-touch"><i className="fa-solid fa-trash-can"></i></button>
                                     </div>
                                 </div>
                                 <div className="flex justify-between items-center gap-4">
@@ -719,21 +700,14 @@
                                     <div className="text-xl font-sans font-bold text-gray-800 tracking-tight whitespace-nowrap">${t.amount.toLocaleString()}</div>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
-                                    {t.excluded ? (
-                                        <span className="badge badge-excluded">不計回饋</span>
-                                    ) : (
-                                        <div className="flex gap-1.5 flex-wrap">
-                                            <span className="badge badge-base">基本 {t.base} 小樹點</span>
-                                            {t.noBonus ? <span className="badge badge-warning">無加碼</span> : <span className="badge badge-bonus">加碼約 {t.estimateBonus} 小樹點</span>}
-                                        </div>
-                                    )}
+                                    {t.excluded ? <span className="badge badge-excluded">不計回饋</span> : <div className="flex gap-1.5 flex-wrap"><span className="badge badge-base">基本 {t.base} 小樹點</span>{t.noBonus ? <span className="badge badge-warning">無加碼</span> : <span className="badge badge-bonus">加碼約 {t.estimateBonus} 小樹點</span>}</div>}
                                 </div>
                             </div>
                         </div>
                     ))}
                 </div>
 
-                <button onClick={openAddTxModal} className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-xl shadow-emerald-200 flex items-center justify-center btn-touch z-50 hover:bg-emerald-700 transition-colors"><Icons.Plus /></button>
+                <button onClick={openAddTxModal} className="fixed bottom-6 right-6 w-14 h-14 bg-emerald-600 text-white rounded-full shadow-xl shadow-emerald-200 flex items-center justify-center btn-touch z-50 hover:bg-emerald-700 transition-colors"><i className="fa-solid fa-plus text-xl"></i></button>
             </div>
         );
     };
