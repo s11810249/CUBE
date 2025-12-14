@@ -89,11 +89,16 @@
         .loading-spinner { border: 3px solid #e2e8f0; border-top: 3px solid #10b981; border-radius: 50%; width: 24px; height: 24px; animation: spin 1s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         
-        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.02em; }
+        .badge { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 999px; font-size: 0.7rem; font-weight: 700; letter-spacing: 0.02em; }
         .badge-base { background: #f1f5f9; color: #64748b; }
         .badge-bonus { background: #dcfce7; color: #15803d; } 
         .badge-capped { background: #fee2e2; color: #b91c1c; }
         .badge-excluded { background: #f1f5f9; color: #94a3b8; text-decoration: line-through; }
+        .badge-warning { background: #ffedd5; color: #c2410c; }
+
+        /* Hide Scrollbar */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
 <body>
@@ -123,11 +128,30 @@
     const db = getFirestore(app);
     const { useState, useEffect, useRef } = React;
 
+    // 消費類別定義
+    const CATEGORIES = [
+        { id: 'general', name: '一般消費', icon: '🛒', noBonus: false, noBase: false },
+        { id: 'dining', name: '餐飲美食', icon: '🍽️', noBonus: false, noBase: false },
+        { id: 'transport', name: '交通運輸', icon: '🚇', noBonus: false, noBase: false },
+        { id: 'online', name: '網購電商', icon: '💻', noBonus: false, noBase: false },
+        { id: 'market', name: '超市量販', icon: '🥦', noBonus: false, noBase: false },
+        { id: 'cvs', name: '便利商店', icon: '🏪', noBonus: false, noBase: false },
+        { id: 'fun', name: '娛樂休閒', icon: '🎮', noBonus: false, noBase: false },
+        { id: 'gas', name: '加油停車', icon: '⛽', noBonus: false, noBase: false },
+        { id: 'medical', name: '醫療保健', icon: '💊', noBonus: false, noBase: false },
+        { id: 'edu', name: '教育學習', icon: '📚', noBonus: false, noBase: false },
+        { id: 'dept', name: '百貨購物', icon: '🛍️', noBonus: true, noBase: false },
+        { id: 'foodcourt', name: '美食街', icon: '🍜', noBonus: true, noBase: false },
+        { id: 'delivery', name: '外送平台', icon: '🛵', noBonus: true, noBase: false },
+        { id: 'overseas', name: '海外消費', icon: '✈️', noBonus: true, noBase: false },
+        { id: 'bill', name: '繳費/稅', icon: '🧾', noBonus: true, noBase: true },
+    ];
+
     const Icons = {
         Eye: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>,
         EyeOff: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07-2.3 2.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>,
         Trash: () => <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>,
-        Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-current"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0 .59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>,
+        Settings: () => <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="currentColor" className="text-current"><path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84a.484.484 0 0 0-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0 .59-.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.27.41.48.41h3.84c.24 0 .44-.17.48-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/></svg>,
         Shield: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>,
         Edit: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg>,
         Key: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"></path></svg>,
@@ -164,7 +188,9 @@
             date: new Date().toISOString().substring(0, 10), 
             merchant: '', 
             amount: '', 
-            excluded: false 
+            category: 'general',
+            excluded: false,  
+            noBonus: false    
         });
 
         useEffect(() => {
@@ -180,14 +206,18 @@
                         date: editingData.date, 
                         merchant: editingData.merchant, 
                         amount: editingData.amount, 
-                        excluded: editingData.excluded 
+                        category: editingData.category || 'general',
+                        excluded: editingData.excluded || false,
+                        noBonus: editingData.noBonus || false
                     });
                 } else {
                      setEditForm({ 
                         date: new Date().toISOString().substring(0, 10), 
                         merchant: '', 
                         amount: '', 
-                        excluded: false 
+                        category: 'general',
+                        excluded: false,
+                        noBonus: false
                     });
                 }
             } else {
@@ -196,6 +226,19 @@
                 return () => clearTimeout(timer);
             }
         }, [isOpen, initialInputValue, editingData]);
+
+        // 處理類別變更，自動設定排除規則
+        const handleCategoryChange = (catId) => {
+            const cat = CATEGORIES.find(c => c.id === catId);
+            if (cat) {
+                setEditForm(prev => ({
+                    ...prev,
+                    category: catId,
+                    excluded: cat.noBase, // 是否無基本回饋
+                    noBonus: cat.noBonus  // 是否無加碼回饋
+                }));
+            }
+        };
 
         if (!isVisible) return null;
 
@@ -227,9 +270,21 @@
                     {(type === 'editTransaction' || type === 'addTransaction') && (
                         <div className="space-y-3">
                             <div><label className="text-xs font-bold text-gray-500">日期</label><input type="date" className="custom-input w-full p-2.5 rounded-xl" value={editForm.date} onChange={e => setEditForm({ ...editForm, date: e.target.value })} /></div>
+                            <div>
+                                <label className="text-xs font-bold text-gray-500">消費類別</label>
+                                <select className="custom-input w-full p-2.5 rounded-xl" value={editForm.category} onChange={e => handleCategoryChange(e.target.value)}>
+                                    {CATEGORIES.map(c => <option key={c.id} value={c.id}>{c.icon} {c.name}</option>)}
+                                </select>
+                            </div>
                             <div><label className="text-xs font-bold text-gray-500">商家</label><input type="text" className="custom-input w-full p-2.5 rounded-xl" placeholder="商家名稱" value={editForm.merchant} onChange={e => setEditForm({ ...editForm, merchant: e.target.value })} /></div>
                             <div><label className="text-xs font-bold text-gray-500">金額</label><input type="number" className="custom-input w-full p-2.5 rounded-xl" placeholder="$" value={editForm.amount} onChange={e => setEditForm({ ...editForm, amount: parseInt(e.target.value) || '' })} /></div>
-                            <label className="flex items-center text-sm text-gray-600 font-bold cursor-pointer"><input type="checkbox" className="mr-2 w-5 h-5 accent-emerald-600 rounded" checked={editForm.excluded} onChange={e => setEditForm({ ...editForm, excluded: e.target.checked })} />非一般消費</label>
+                            
+                            <div className="flex gap-2 text-xs font-bold mt-2 justify-end">
+                                {editForm.excluded ? 
+                                    <span className="text-red-500 bg-red-50 px-2 py-1 rounded">無任何回饋</span> : 
+                                    (editForm.noBonus ? <span className="text-orange-500 bg-orange-50 px-2 py-1 rounded">僅基本 0.3%</span> : <span className="text-emerald-600 bg-emerald-50 px-2 py-1 rounded">適用加碼 1.7%</span>)
+                                }
+                            </div>
                         </div>
                     )}
                 </div>
@@ -360,6 +415,7 @@
         const [modal, setModal] = useState({ isOpen: false, type: 'info', title: '', content: '' });
         const [showSettings, setShowSettings] = useState(false);
         const [currentNickname, setCurrentNickname] = useState(user.displayName || '使用者');
+        const [filterCategory, setFilterCategory] = useState('all'); // 新增：類別篩選狀態
         const canvasRef = useRef(null);
         const settingsRef = useRef(null);
 
@@ -389,49 +445,49 @@
         };
 
         const monthlyData = transactions.filter(t => t.date.startsWith(currentMonth));
-        let _acc = 0;
+        
+        // --- 核心邏輯 ---
         const _validCount = monthlyData.filter(t => !t.excluded).length;
         const _isQualified = _validCount >= 8;
         
-        const processedList = [...monthlyData].sort((a,b) => {
-            let res = 0;
-            if (sortConfig.key === 'date') res = a.date.localeCompare(b.date);
-            else if (sortConfig.key === 'merchant') res = a.merchant.localeCompare(b.merchant, 'zh-Hant');
-            if (res === 0) res = a.createdAt - b.createdAt;
-            return sortConfig.direction === 'asc' ? res : -res;
-        }).map(t=>{
-            let base=0, bonus=0;
-            if(!t.excluded) {
-                base = Math.round(t.amount * 0.003);
-                if(_isQualified) bonus = Math.round(t.amount * 0.017);
-            }
-            return { ...t, base, bonus };
-        });
+        // 篩選與排序邏輯
+        const processedList = [...monthlyData]
+            // 新增：類別篩選
+            .filter(t => filterCategory === 'all' || (t.category || 'general') === filterCategory)
+            .sort((a,b) => {
+                let res = 0;
+                if (sortConfig.key === 'date') res = a.date.localeCompare(b.date);
+                else if (sortConfig.key === 'merchant') res = a.merchant.localeCompare(b.merchant, 'zh-Hant');
+                if (res === 0) res = a.createdAt - b.createdAt;
+                return sortConfig.direction === 'asc' ? res : -res;
+            }).map(t=>{
+                // 單筆基本回饋
+                let base = 0;
+                if (!t.excluded) {
+                    base = Math.round(t.amount * 0.003);
+                }
+                // 單筆預估加碼 (僅顯示用，不計入總數)
+                let estimateBonus = 0;
+                if (!t.excluded && !t.noBonus) {
+                    estimateBonus = Math.round(t.amount * 0.017);
+                }
+                return { ...t, base, estimateBonus };
+            });
 
         const totalBase = processedList.reduce((acc, t) => acc + t.base, 0);
         
-        let sumBonusMethodA = 0;
-        processedList.forEach(t => {
-            if(_isQualified && !t.excluded) {
-                let raw = Math.round(t.amount * 0.017);
-                if (sumBonusMethodA < 100) {
-                   let room = 100 - sumBonusMethodA;
-                   sumBonusMethodA += Math.min(raw, room);
-                }
-            }
-        });
+        // 加碼回饋計算 (整月總額制) - 不受下方篩選器影響，始終顯示當月總覽
+        const bonusEligibleAmount = monthlyData
+            .filter(t => !t.excluded && !t.noBonus)
+            .reduce((acc, t) => acc + t.amount, 0);
 
-        const totalAmountValid = monthlyData.filter(t => !t.excluded).reduce((acc, t) => acc + t.amount, 0);
-        let bonusMethodB = 0;
-        if (_isQualified) bonusMethodB = Math.min(100, Math.round(totalAmountValid * 0.017));
+        let totalBonus = 0;
+        if (_isQualified) {
+            totalBonus = Math.min(100, Math.round(bonusEligibleAmount * 0.017));
+        }
 
-        // 依據實際獲得點數反推剩餘額度
-        // 剩餘點數 = 100 - 目前實際點數
-        const remainingPoints = Math.max(0, 100 - sumBonusMethodA);
-        // 剩餘額度 = 剩餘點數 / 1.7% (四捨五入)
-        const remainingSpend = Math.round(remainingPoints / 0.017);
-        // 預估封頂總消費 = 目前消費 + 剩餘額度
-        const projectedCapSpend = totalAmountValid + remainingSpend;
+        const MAX_BONUS_SPEND = 5883; // $5883 * 1.7% ~= 100.01
+        const remainingSpend = Math.max(0, MAX_BONUS_SPEND - bonusEligibleAmount);
 
         useEffect(() => {
             if (!canvasRef.current) return;
@@ -467,11 +523,11 @@
             // 1. 合格筆數 (左)
             drawRing(W * 0.166, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`差 ${8-_validCount} 筆`, radius);
             
-            // 2. 消費總計 (中) - 使用動態反推的 projectedCapSpend 作為分母
-            drawRing(W * 0.5, centerY, totalAmountValid, projectedCapSpend, '#3b82f6', '本月消費', `餘 $${remainingSpend}`, radius);
+            // 2. 加碼消費進度 (中)
+            drawRing(W * 0.5, centerY, bonusEligibleAmount, MAX_BONUS_SPEND, '#3b82f6', '加碼消費', `餘 $${remainingSpend}`, radius);
 
-            // 3. 加碼回饋 (右)
-            drawRing(W * 0.833, centerY, sumBonusMethodA, 100, sumBonusMethodA>=100?'#ef4444':'#10b981', '加碼回饋', sumBonusMethodA>=100?'已封頂':'未封頂', radius);
+            // 3. 加碼回饋點數 (右)
+            drawRing(W * 0.833, centerY, totalBonus, 100, totalBonus>=100?'#ef4444':'#10b981', '加碼回饋', totalBonus>=100?'已封頂':'未封頂', radius);
 
             ctx.beginPath(); 
             ctx.moveTo(W/3, 10); ctx.lineTo(W/3, H-30); 
@@ -505,6 +561,8 @@
                     await addDoc(collection(db, 'users', user.uid, 'records'), { ...newForm, amount: parseInt(newForm.amount), createdAt: Date.now() });
                     closeModal();
                     showToast('新增成功');
+                    // 恢復置頂功能
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
                 },
                 onCancel: closeModal
             });
@@ -525,7 +583,9 @@
                         date: newForm.date,
                         merchant: newForm.merchant,
                         amount: newForm.amount,
-                        excluded: newForm.excluded
+                        excluded: newForm.excluded,
+                        noBonus: newForm.noBonus,
+                        category: newForm.category
                     });
                     closeModal();
                     showToast('修改成功');
@@ -609,18 +669,35 @@
                         <div className="flex flex-col items-end">
                             <div className="text-xs font-bold text-gray-500">基本 0.3%: <span className="text-gray-800 text-base">{totalBase} 小樹點</span></div>
                             <div className="flex gap-4 mt-2 bg-white p-2 rounded-lg border border-gray-100 shadow-sm">
-                                <div className="text-right"><div className="text-[10px] text-gray-400 font-bold mb-0.5">逐筆計算 (保守)</div><div className="text-emerald-600 font-bold text-base leading-none">{sumBonusMethodA} <span className="text-[10px]">小樹點</span></div></div>
-                                <div className="w-[1px] bg-gray-200"></div>
-                                <div className="text-right"><div className="text-[10px] text-gray-400 font-bold mb-0.5">整月總計 (樂觀)</div><div className="text-emerald-600 font-bold text-base leading-none">{bonusMethodB} <span className="text-[10px]">小樹點</span></div></div>
+                                <div className="text-right"><div className="text-[10px] text-gray-400 font-bold mb-0.5">加碼 (整月結算)</div><div className="text-emerald-600 font-bold text-base leading-none">{totalBonus} <span className="text-[10px]">小樹點</span></div></div>
                             </div>
-                            <div className="text-[9px] text-gray-300 mt-1 text-right">*銀行實際計算方式可能略有不同，故提供兩者參考</div>
+                            <div className="text-[9px] text-gray-300 mt-1 text-right">*加碼回饋採整月總額 x 1.7% 計算 (四捨五入)</div>
                         </div>
                     </div>
                 </div>
 
-                <div className="flex items-center gap-3 mb-4 px-2">
+                <div className="flex items-center gap-3 mb-2 px-2">
                      <button onClick={() => toggleSort('date')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'date' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>日期 {sortConfig.key === 'date' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
                      <button onClick={() => toggleSort('merchant')} className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full transition ${sortConfig.key === 'merchant' ? 'bg-emerald-100 text-emerald-700' : 'bg-white text-gray-400'}`}>商家 {sortConfig.key === 'merchant' ? (sortConfig.direction === 'asc' ? <Icons.SortAsc/> : <Icons.SortDesc/>) : ''}</button>
+                </div>
+
+                {/* 類別篩選列 */}
+                <div className="flex gap-2 overflow-x-auto pb-2 mb-2 px-2 no-scrollbar" style={{scrollbarWidth: 'none', msOverflowStyle: 'none'}}>
+                    <button
+                        onClick={() => setFilterCategory('all')}
+                        className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors ${filterCategory === 'all' ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}
+                    >
+                        全部
+                    </button>
+                    {CATEGORIES.map(c => (
+                        <button
+                            key={c.id}
+                            onClick={() => setFilterCategory(c.id)}
+                            className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-colors flex items-center gap-1 ${filterCategory === c.id ? 'bg-gray-800 text-white' : 'bg-white text-gray-500 shadow-sm'}`}
+                        >
+                            <span>{c.icon}</span> {c.name}
+                        </button>
+                    ))}
                 </div>
 
                 <div className="space-y-3">
@@ -628,7 +705,10 @@
                         <div key={t.id} className={`app-card p-4 ${t.excluded ? 'opacity-60 bg-slate-50' : ''}`}>
                             <div className="flex flex-col gap-2">
                                 <div className="flex justify-between items-start">
-                                    <div className="text-xs text-gray-400 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
+                                    <div className="flex items-center gap-2">
+                                        <div className="text-xs text-gray-400 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
+                                        <span className="text-xs">{CATEGORIES.find(c => c.id === (t.category || 'general'))?.icon}</span>
+                                    </div>
                                     <div className="flex gap-2">
                                         <button onClick={()=>editTx(t)} className="text-gray-400 hover:text-blue-500 transition btn-touch"><Icons.Edit/></button>
                                         <button onClick={()=>delTx(t.id)} className="text-gray-300 hover:text-red-500 transition btn-touch"><Icons.Trash/></button>
@@ -639,7 +719,14 @@
                                     <div className="text-xl font-sans font-bold text-gray-800 tracking-tight whitespace-nowrap">${t.amount.toLocaleString()}</div>
                                 </div>
                                 <div className="flex items-center gap-2 mt-1">
-                                    {t.excluded ? <span className="text-[10px] bg-gray-200 px-1.5 py-0.5 rounded text-gray-500 font-bold">排除計算</span> : <div className="flex gap-1.5 flex-wrap"><span className="badge badge-base">基本 {t.base} 小樹點</span><span className="badge badge-bonus">加碼 {t.bonus} 小樹點</span></div>}
+                                    {t.excluded ? (
+                                        <span className="badge badge-excluded">不計回饋</span>
+                                    ) : (
+                                        <div className="flex gap-1.5 flex-wrap">
+                                            <span className="badge badge-base">基本 {t.base} 小樹點</span>
+                                            {t.noBonus ? <span className="badge badge-warning">無加碼</span> : <span className="badge badge-bonus">加碼約 {t.estimateBonus} 小樹點</span>}
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
