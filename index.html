@@ -12,11 +12,11 @@
     <meta name="application-name" content="CUBE記帳">
     <meta name="theme-color" content="#f1f5f9">
 
-    <!-- App Icon (使用標準字體渲染的完美 C) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E">
+    <!-- App Icon (Green Gradient with White 'C') -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
 
-    <!-- Web App Manifest (同步更新 Icon) -->
+    <!-- Web App Manifest -->
     <link rel="manifest" id="my-manifest">
     <script>
         const manifest = {
@@ -27,7 +27,7 @@
             "background_color": "#f1f5f9",
             "theme_color": "#f1f5f9",
             "icons": [{
-                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E",
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E",
                 "type": "image/svg+xml",
                 "sizes": "512x512"
             }]
@@ -174,7 +174,7 @@
     const app = initializeApp(firebaseConfig);
     const auth = getAuth(app);
     const db = getFirestore(app);
-    const { useState, useEffect, useRef } = React;
+    const { useState, useEffect, useRef, useMemo } = React;
 
     const getTaiwanDate = () => {
         const d = new Date();
@@ -530,6 +530,20 @@
             return () => { unsubUser(); unsubTrans(); };
         }, [user]);
 
+        // 計算月份選項，並確保包含當前月份 (解決月份消失問題)
+        const monthOptions = useMemo(() => {
+            const monthSet = new Set(transactions.map(t => t.date.substring(0, 7)));
+            monthSet.add(getTaiwanDate().substring(0, 7));
+            return [...monthSet].sort().reverse();
+        }, [transactions]);
+
+        // 監聽月份變動，若當前月份消失，自動切換至最新月份 (解決顯示內容未跳回問題)
+        useEffect(() => {
+            if (!monthOptions.includes(currentMonth)) {
+                setCurrentMonth(monthOptions[0]);
+            }
+        }, [monthOptions, currentMonth]);
+
         const showToast = (message) => {
             setToast({ show: true, message });
             setTimeout(() => { setToast({ show: false, message: '' }); }, 2000);
@@ -698,8 +712,6 @@
             }); 
         };
 
-        const monthOptions = [...new Set([...transactions.map(t=>t.date.substring(0,7)), getTaiwanDate().substring(0,7)])].sort().reverse();
-        
         const toggleSort = (key) => {
             setSortConfig(prev => ({
                 key,
@@ -739,14 +751,12 @@
                 </div>
                 
                 <div className="mb-4 px-2 space-y-4">
-                    {/* 月份選擇 Row */}
                     <div>
                         <select value={currentMonth} onChange={e=>setCurrentMonth(e.target.value)} className="bg-white border-none py-2 px-4 rounded-xl shadow-sm text-lg font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 transition w-auto">
                             {monthOptions.map(m=><option key={m} value={m}>{m.replace('-', '/')}</option>)}
                         </select>
                     </div>
                     
-                    {/* 本月預估回饋 Row (右對齊，純文字) */}
                     <div className="text-right">
                         <div className="text-sm text-gray-500 font-bold mb-1">本月預估回饋</div>
                         <div className="flex items-center justify-end gap-2 text-sm font-bold text-gray-700">
