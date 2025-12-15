@@ -12,14 +12,13 @@
     <meta name="application-name" content="CUBE記帳">
     <meta name="theme-color" content="#f1f5f9">
 
-    <!-- App Icon (修正版 SVG) -->
-    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg width='192' height='192' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334d399'/%3E%3Cstop offset='100%25' stop-color='%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg width='192' height='192' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334d399'/%3E%3Cstop offset='100%25' stop-color='%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
+    <!-- App Icon (使用標準字體渲染的完美 C) -->
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E">
 
-    <!-- Web App Manifest (修正中文亂碼問題) -->
+    <!-- Web App Manifest (同步更新 Icon) -->
     <link rel="manifest" id="my-manifest">
     <script>
-        // 動態生成 Manifest 以確保中文編碼正確
         const manifest = {
             "name": "CUBE回饋記帳",
             "short_name": "CUBE記帳",
@@ -28,9 +27,9 @@
             "background_color": "#f1f5f9",
             "theme_color": "#f1f5f9",
             "icons": [{
-                "src": "data:image/svg+xml,%3Csvg width='192' height='192' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' stop-color='%2334d399'/%3E%3Cstop offset='100%25' stop-color='%23059669'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E",
+                "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Ctext x='50%25' y='50%25' font-family='Arial, sans-serif' font-weight='bold' font-size='320' fill='white' dominant-baseline='central' text-anchor='middle' dy='20'%3EC%3C/text%3E%3C/svg%3E",
                 "type": "image/svg+xml",
-                "sizes": "192x192"
+                "sizes": "512x512"
             }]
         };
         document.getElementById('my-manifest').href = 'data:application/manifest+json,' + encodeURIComponent(JSON.stringify(manifest));
@@ -184,7 +183,6 @@
         return localTime.toISOString().split('T')[0];
     };
 
-    // 消費類別定義
     const CATEGORIES = [
         { id: 'general', name: '一般消費', icon: 'fa-solid fa-cart-shopping', style: 'bg-slate-100 text-slate-600', noBonus: false, noBase: false },
         { id: 'dining', name: '餐飲美食', icon: 'fa-solid fa-utensils', style: 'bg-orange-100 text-orange-600', noBonus: false, noBase: false },
@@ -196,12 +194,10 @@
         { id: 'gas', name: '加油停車', icon: 'fa-solid fa-gas-pump', style: 'bg-yellow-100 text-yellow-700', noBonus: false, noBase: false },
         { id: 'medical', name: '醫療保健', icon: 'fa-solid fa-notes-medical', style: 'bg-rose-100 text-rose-600', noBonus: false, noBase: false },
         { id: 'edu', name: '教育學習', icon: 'fa-solid fa-graduation-cap', style: 'bg-cyan-100 text-cyan-700', noBonus: false, noBase: false },
-        // 無加碼 (1.7%)
         { id: 'dept', name: '百貨購物', icon: 'fa-solid fa-bag-shopping', style: 'bg-fuchsia-100 text-fuchsia-600', noBonus: true, noBase: false },
         { id: 'foodcourt', name: '美食街', icon: 'fa-solid fa-bowl-food', style: 'bg-amber-100 text-amber-600', noBonus: true, noBase: false },
         { id: 'delivery', name: '外送平台', icon: 'fa-solid fa-motorcycle', style: 'bg-green-100 text-green-600', noBonus: true, noBase: false },
         { id: 'overseas', name: '海外消費', icon: 'fa-solid fa-plane', style: 'bg-sky-100 text-sky-600', noBonus: true, noBase: false },
-        // 完全排除
         { id: 'bill', name: '繳費/稅', icon: 'fa-solid fa-file-invoice-dollar', style: 'bg-gray-200 text-gray-500', noBonus: true, noBase: true },
         { id: 'others_excluded', name: '其他非一般消費', icon: 'fa-solid fa-ban', style: 'bg-gray-200 text-gray-500', noBonus: true, noBase: true },
     ];
@@ -702,7 +698,6 @@
             }); 
         };
 
-        // 修正月份選擇器：合併 Set 與目前月份
         const monthOptions = [...new Set([...transactions.map(t=>t.date.substring(0,7)), getTaiwanDate().substring(0,7)])].sort().reverse();
         
         const toggleSort = (key) => {
