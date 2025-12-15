@@ -12,12 +12,12 @@
     <meta name="application-name" content="CUBE回饋記帳">
     <meta name="theme-color" content="#f1f5f9">
 
-    <!-- App Icon (Green Gradient Background) -->
+    <!-- App Icon (Green Gradient with White 'C') -->
     <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='grad' x1='0%25' y1='0%25' x2='100%25' y2='100%25'%3E%3Cstop offset='0%25' style='stop-color:%2334d399;stop-opacity:1' /%3E%3Cstop offset='100%25' style='stop-color:%23059669;stop-opacity:1' /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='512' height='512' rx='120' fill='url(%23grad)'/%3E%3Cpath d='M340 140 C 200 140, 140 220, 140 256 C 140 292, 200 372, 340 372' stroke='white' stroke-width='50' fill='none' stroke-linecap='round' /%3E%3C/svg%3E">
 
     <!-- Web App Manifest -->
-    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoi5ZyL5rOw5LiW6IevQ1VCRW9hTElORSBQQVnlm57aBDLoiIoiLCJzaG9ydF9uYW1lIjoiQ1VCReWbnuWipOiolOecqyIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZjFmNWY5IiwidGhlbWVfY29sb3IiOiIjZjFmNWY5IiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlN0IlM0Nzdmcgdmlld0JveD0nMCAwIDUxMiA1MTInIHhtbG5zPSdodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2Zycgc3R5bGU9J2JhY2tncm91bmQ6ICMwNTk2Njk7IGJvcmRlci1yYWRpdXM6IDI1JSclM0UlM0NkZWZzJTNFJTNDbGluZWFyR3JhZGllbnQgaWQ9J2dyYWQnIHgxPScwJTI1JyB5MT0nMCUyNScgeDI9JzEwMCUyNScgeTI9JzEwMCUyNSclM0UlM0NzdG9wIG9mZnNldD0nMCUyNScgc3R5bGU9J3N0b3AtY29sb3I6JTIzMzRkMzk5O3N0b3Atb3BhY2l0eToxJyAvJTNFJTNDc3RvcCBvZmZzZXQ9JzEwMCUyNScgc3R5bGU9J3N0b3AtY29sb3I6JTIzMDU5NjY5O3N0b3Atb3BhY2l0eToxJyAvJTNFJTNDL2xpbmVhckdyYWRpZW50JTNFJTNDL2RlZnMlM0UlM0NyZWN0IHdpZHRoPSc1MTInIGhlaWdodD0nNTEyJyByeD0nMTIwJyBmaWxsPSd1cmwoJTIzZ3JhZCknLzQlM0UlM0NwYXRoIGQ9J00zNDAgMTQwIEMgMjAwIDE0MCwgMTQwIDIyMCwgMTQwIDI1NiBDIDE0MCAyOTIsIDIwMCAzNzIsIDM0MCAzNzInIHN0cm9rZT0nd2hpdGUnIHN0cm9rZS13aWR0aD0nNTAnIGZpbGw9J25vbmUnIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIvJTNFJTNDL3N2ZyUzRSIsInR5cGUiOiJpbWFnZS9zdmcreG1sIiwic2l6ZXMiOiI1MTJ4NTEyIn1dfQ==">
+    <link rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiQ1VCReWbnuWipOiolOecqyIsInNob3J0X25hbWUiOiJDVUJF5Zue5aKk6KiU55yrIiwic3RhcnRfdXJsIjoiLiIsImRpc3BsYXkiOiJzdGFuZGFsb25lIiwiYmFja2dyb3VuZF9jb2xvciI6IiNlMmU4ZjAiLCJ0aGVtZV9jb2xvciI6IiNmMWY1ZjkiLCJpY29ucyI6W3sic3JjIjoiZGF0YTppbWFnZS9zdmcreG1sLCU3QiUzQ3N2ZyB4bWxucz0naHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmcnIHZpZXdCb3g9JzAgMCA1MTIgNTEyJyUzRSUzQ2RlZnMlM0UlM0NsaW5lYXJHcmFkaWVudCBpZD0nZ3JhZCcgeDE9JzAlMjUnIHkxPScwJTI1JyB4Mj0nMTAwJTI1JyB5Mj0nMTAwJTI1JyUzRSUzQ3N0b3Agb2Zmc2V0PScwJTI1JyBzdHlsZT0nc3RvcC1jb2xvcjolMjMzNGQzOTk7c3RvcC1vcGFjaXR5OjEnIC8lM0UlM0NzdG9wIG9mZnNldD0nMTAwJTI1JyBzdHlsZT0nc3RvcC1jb2xvcjolMjMwNTk2Njk7c3RvcC1vcGFjaXR5OjEnIC8lM0UlM0MvbGluZWFyR3JhZGllbnQlM0UlM0MvZGVmcyUzRSUzQ3JlY3Qgd2lkdGg9JzUxMicgaGVpZ2h0PSc1MTInIHJ4PScxMjAnIGZpbGw9J3VybCglMjNncmFkKScvJTNFJTNDcGF0aCBkPSdNMzQwIDE0MCBDIDIwMCAxNDAsIDE0MCAyMjAsIDE0MCAyNTYgQyAxNDAgMjkyLCAyMDAgMzcyLCAzNDAgMzcyJyBzdHJva2U9J3doaXRlJyBzdHJva2Utd2lkdGg9JzUwJyBmaWxsPSdub25lJyBzdHJva2UtbGluZWNhcD0ncm91bmQnIC8lM0UlM0Mvc3ZnJTVDIiwidHlwZSI6ImltYWdlL3N2Zyt4bWwiLCJzaXplcyI6IjUxMng1MTIifV19">
 
     <!-- React & Tailwind -->
     <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
@@ -167,23 +167,26 @@
         return localTime.toISOString().split('T')[0];
     };
 
+    // 消費類別定義 (加上 style 顏色)
     const CATEGORIES = [
-        { id: 'general', name: '一般消費', icon: 'fa-solid fa-cart-shopping', noBonus: false, noBase: false },
-        { id: 'dining', name: '餐飲美食', icon: 'fa-solid fa-utensils', noBonus: false, noBase: false },
-        { id: 'transport', name: '交通運輸', icon: 'fa-solid fa-train-subway', noBonus: false, noBase: false },
-        { id: 'online', name: '網購電商', icon: 'fa-solid fa-globe', noBonus: false, noBase: false },
-        { id: 'market', name: '超市量販', icon: 'fa-solid fa-basket-shopping', noBonus: false, noBase: false },
-        { id: 'cvs', name: '便利商店', icon: 'fa-solid fa-store', noBonus: false, noBase: false },
-        { id: 'fun', name: '娛樂休閒', icon: 'fa-solid fa-gamepad', noBonus: false, noBase: false },
-        { id: 'gas', name: '加油停車', icon: 'fa-solid fa-gas-pump', noBonus: false, noBase: false },
-        { id: 'medical', name: '醫療保健', icon: 'fa-solid fa-notes-medical', noBonus: false, noBase: false },
-        { id: 'edu', name: '教育學習', icon: 'fa-solid fa-graduation-cap', noBonus: false, noBase: false },
-        { id: 'dept', name: '百貨購物', icon: 'fa-solid fa-bag-shopping', noBonus: true, noBase: false },
-        { id: 'foodcourt', name: '美食街', icon: 'fa-solid fa-bowl-food', noBonus: true, noBase: false },
-        { id: 'delivery', name: '外送平台', icon: 'fa-solid fa-motorcycle', noBonus: true, noBase: false },
-        { id: 'overseas', name: '海外消費', icon: 'fa-solid fa-plane', noBonus: true, noBase: false },
-        { id: 'bill', name: '繳費/稅', icon: 'fa-solid fa-file-invoice-dollar', noBonus: true, noBase: true },
-        { id: 'others_excluded', name: '其他非一般消費', icon: 'fa-solid fa-ban', noBonus: true, noBase: true },
+        { id: 'general', name: '一般消費', icon: 'fa-solid fa-cart-shopping', style: 'bg-slate-100 text-slate-600', noBonus: false, noBase: false },
+        { id: 'dining', name: '餐飲美食', icon: 'fa-solid fa-utensils', style: 'bg-orange-100 text-orange-600', noBonus: false, noBase: false },
+        { id: 'transport', name: '交通運輸', icon: 'fa-solid fa-train-subway', style: 'bg-blue-100 text-blue-600', noBonus: false, noBase: false },
+        { id: 'online', name: '網購電商', icon: 'fa-solid fa-globe', style: 'bg-indigo-100 text-indigo-600', noBonus: false, noBase: false },
+        { id: 'market', name: '超市量販', icon: 'fa-solid fa-basket-shopping', style: 'bg-emerald-100 text-emerald-600', noBonus: false, noBase: false },
+        { id: 'cvs', name: '便利商店', icon: 'fa-solid fa-store', style: 'bg-teal-100 text-teal-600', noBonus: false, noBase: false },
+        { id: 'fun', name: '娛樂休閒', icon: 'fa-solid fa-gamepad', style: 'bg-pink-100 text-pink-600', noBonus: false, noBase: false },
+        { id: 'gas', name: '加油停車', icon: 'fa-solid fa-gas-pump', style: 'bg-yellow-100 text-yellow-700', noBonus: false, noBase: false },
+        { id: 'medical', name: '醫療保健', icon: 'fa-solid fa-notes-medical', style: 'bg-rose-100 text-rose-600', noBonus: false, noBase: false },
+        { id: 'edu', name: '教育學習', icon: 'fa-solid fa-graduation-cap', style: 'bg-cyan-100 text-cyan-700', noBonus: false, noBase: false },
+        // 無加碼 (1.7%)
+        { id: 'dept', name: '百貨購物', icon: 'fa-solid fa-bag-shopping', style: 'bg-fuchsia-100 text-fuchsia-600', noBonus: true, noBase: false },
+        { id: 'foodcourt', name: '美食街', icon: 'fa-solid fa-bowl-food', style: 'bg-amber-100 text-amber-600', noBonus: true, noBase: false },
+        { id: 'delivery', name: '外送平台', icon: 'fa-solid fa-motorcycle', style: 'bg-green-100 text-green-600', noBonus: true, noBase: false },
+        { id: 'overseas', name: '海外消費', icon: 'fa-solid fa-plane', style: 'bg-sky-100 text-sky-600', noBonus: true, noBase: false },
+        // 完全排除
+        { id: 'bill', name: '繳費/稅', icon: 'fa-solid fa-file-invoice-dollar', style: 'bg-gray-200 text-gray-500', noBonus: true, noBase: true },
+        { id: 'others_excluded', name: '其他非一般消費', icon: 'fa-solid fa-ban', style: 'bg-gray-200 text-gray-500', noBonus: true, noBase: true },
     ];
 
     const Icons = {
@@ -713,7 +716,7 @@
                 
                 {/* 頂部固定 Header */}
                 <div className="sticky-header flex justify-between items-center mb-6 pl-2">
-                    <div className="text-xl font-black text-gray-800 tracking-tight ml-2">{currentNickname}，您好！</div>
+                    <div className="text-xl font-black text-gray-800 tracking-tight ml-4">{currentNickname}，您好！</div>
                     <div className="flex gap-2 relative" ref={settingsRef}>
                         <button onClick={() => setShowSettings(!showSettings)} className={`btn-circle transition-all duration-200 ${showSettings ? 'bg-emerald-50 text-emerald-600 shadow-inner' : 'bg-white text-gray-400 shadow-sm border border-gray-200 hover:text-emerald-600'}`}><i className="fa-solid fa-gear text-lg"></i></button>
                         {showSettings && (
@@ -780,7 +783,7 @@
                                         <div className="flex items-center gap-2">
                                             <div className="text-xs text-gray-400 font-bold tracking-tight">{t.date.replace(/-/g, '/')}</div>
                                             <div className="h-3 w-[1px] bg-gray-300"></div>
-                                            <span className="text-xs text-gray-500 flex items-center gap-1">
+                                            <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold flex items-center gap-1 ${cat?.style || 'bg-gray-100 text-gray-500'}`}>
                                                 <i className={cat?.icon}></i> {cat?.name}
                                             </span>
                                         </div>
