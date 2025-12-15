@@ -114,6 +114,9 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
         .btn-circle { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; border-radius: 50%; }
+
+        /* 防止下拉選單滾動回彈 */
+        .scroll-contain { overscroll-behavior: contain; }
     </style>
 </head>
 <body>
@@ -166,7 +169,6 @@
         { id: 'delivery', name: '外送平台', icon: 'fa-solid fa-motorcycle', noBonus: true, noBase: false },
         { id: 'overseas', name: '海外消費', icon: 'fa-solid fa-plane', noBonus: true, noBase: false },
         { id: 'bill', name: '繳費/稅', icon: 'fa-solid fa-file-invoice-dollar', noBonus: true, noBase: true },
-        // 補上 "消費" 二字
         { id: 'others_excluded', name: '其他非一般消費', icon: 'fa-solid fa-ban', noBonus: true, noBase: true },
     ];
 
@@ -227,7 +229,7 @@
                 </button>
                 
                 {isOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 shadow-xl rounded-xl max-h-60 overflow-y-auto z-50">
+                    <div className="absolute top-full left-0 right-0 mt-1 bg-white border border-gray-100 shadow-xl rounded-xl max-h-60 overflow-y-auto z-50 scroll-contain pb-20">
                         {options.map(opt => (
                             <button
                                 key={opt.id}
@@ -590,12 +592,9 @@
             const centerY = H/2 - 10;
             
             drawRing(W * 0.166, centerY, _validCount, 8, _isQualified?'#10b981':'#f59e0b', '合格筆數', _isQualified?'已達標':`差 ${8-_validCount} 筆`, radius);
-            // 修改文字標籤：消費上限
             drawRing(W * 0.5, centerY, bonusEligibleAmount, MAX_BONUS_SPEND, '#3b82f6', '消費上限', `餘 $${remainingSpend}`, radius);
-            // 修改文字標籤：回饋上限
             drawRing(W * 0.833, centerY, totalBonus, 100, totalBonus>=100?'#ef4444':'#10b981', '回饋上限', totalBonus>=100?'已封頂':'未封頂', radius);
 
-            // 移除分隔線 (已註解掉)
         }, [transactions, currentMonth]);
 
         const showModal = (cfg) => setModal(() => ({ ...cfg, isOpen: true }));
