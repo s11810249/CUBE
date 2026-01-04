@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>回饋獵人 V10</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#F5F5F7">
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', '"Noto Sans TC"', 'sans-serif'] },
+                    colors: {
+                        ios: { bg: '#F5F5F7', card: '#FFFFFF', blue: '#007AFF', green: '#34C759', orange: '#FF9500', red: '#FF3B30', gray: '#8E8E93', dark: '#1C1C1E', purple: '#5856D6' }
+                    },
+                    boxShadow: {
+                        'float': '0 8px 32px rgba(0,0,0,0.08)',
+                        'card': '0 4px 12px rgba(0,0,0,0.03)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { background-color: #F5F5F7; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .ios-input-group { background: white; border-radius: 14px; margin-bottom: 16px; overflow: hidden; box-shadow: 0 1px 2px rgba(0,0,0,0.02); }
+        .ios-cell { padding: 14px 16px; border-bottom: 1px solid #F2F2F7; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+        .ios-cell:last-child { border-bottom: none; }
+        .ios-label { font-size: 15px; font-weight: 600; color: #1C1C1E; width: 85px; flex-shrink: 0; }
+        .ios-input { flex: 1; font-size: 15px; color: #1C1C1E; border: none; outline: none; background: transparent; text-align: right; }
+        .ios-select { -webkit-appearance: none; direction: rtl; color: #007AFF; font-weight: 600; }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-enter { animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        
+        /* Chips & Badges */
+        .chip { padding: 6px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; background: #E5E5EA; color: #8E8E93; transition: all 0.2s; cursor: pointer; user-select: none; }
+        .chip.active { background: #1C1C1E; color: white; }
+        
+        .badge-source { font-size: 10px; padding: 2px 8px; border-radius: 6px; font-weight: 700; display: inline-flex; align-items: center; gap: 4px; }
+        .badge-account { background: #E3F2FD; color: #1565C0; }
+        .badge-balance { background: #FCE4EC; color: #C2185B; }
+        .badge-card { background: #F5F5F5; color: #616161; }
+
+        /* Toggle Button Group */
+        .toggle-group { display: flex; background: #E5E5EA; padding: 2px; border-radius: 10px; }
+        .toggle-btn { flex: 1; padding: 6px; text-align: center; font-size: 12px; font-weight: 600; border-radius: 8px; color: #8E8E93; transition: all 0.2s; }
+        .toggle-btn.active { background: white; color: #000; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        .safe-pb { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+    </style>
+</head>
+<body class="text-gray-900 pb-32">
+
+    <!-- 1. Header -->
+    <header class="fixed top-0 w-full z-40 bg-[#F5F5F7]/95 backdrop-blur-xl border-b border-gray-200/50 transition-all duration-300" id="header">
+        <div class="px-5 pt-14 pb-3 flex justify-between items-end">
+            <div>
+                <p class="text-[11px] font-bold text-gray-400 uppercase tracking-widest mb-1 flex items-center gap-1">
+                    <i class="fa-solid fa-crosshairs"></i> <span id="headerDate">LOADING...</span>
+                </p>
+                <h1 class="text-3xl font-black tracking-tight text-gray-900" id="pageTitle">回饋獵人</h1>
+            </div>
+            <div class="relative bg-white rounded-full px-3 py-1.5 shadow-sm flex items-center gap-2 border border-gray-200/50">
+                <i class="fa-regular fa-calendar text-ios-blue text-xs"></i>
+                <select id="simDate" onchange="app.updateDateOffset(this.value)" class="appearance-none bg-transparent text-xs font-bold text-gray-600 outline-none pr-3 cursor-pointer">
+                    <option value="0">今天</option>
+                    <option value="1">明天</option>
+                    <option value="2">後天</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="px-5 pb-3 min-h-[40px]">
+            <div id="filterBar" class="flex gap-2 overflow-x-auto no-scrollbar hidden"></div>
+            <div id="searchBar" class="hidden">
+                <div class="relative">
+                    <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm"></i>
+                    <input type="text" id="searchInput" oninput="app.handleSearch()" placeholder="搜尋活動、商家..." class="w-full bg-white rounded-xl pl-9 pr-4 py-2.5 text-sm shadow-sm focus:ring-2 focus:ring-ios-blue outline-none transition-all placeholder-gray-400">
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- 2. Content -->
+    <main id="mainContent" class="px-4 pt-48 min-h-screen pb-32">
+        <!-- Dynamic Content -->
+    </main>
+
+    <!-- 3. Bottom Nav -->
+    <nav class="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200/50 pb-safe z-30 shadow-nav safe-pb">
+        <div class="flex justify-between items-end px-2 pt-2 pb-2 max-w-lg mx-auto">
+            <button onclick="app.switchView('dashboard')" id="nav-dashboard" class="flex-1 flex flex-col items-center gap-1 py-1 group">
+                <i class="fa-solid fa-house text-xl mb-0.5"></i><span class="text-[10px] font-medium">攻略</span>
+            </button>
+            <button onclick="app.switchView('reminders')" id="nav-reminders" class="flex-1 flex flex-col items-center gap-1 py-1 group">
+                <i class="fa-solid fa-bell text-xl mb-0.5"></i><span class="text-[10px] font-medium">提醒</span>
+            </button>
+            <div class="flex-1 flex flex-col items-center justify-end">
+                <button onclick="app.openModal()" class="w-14 h-14 bg-ios-dark rounded-full text-white shadow-float flex items-center justify-center mb-2 active:scale-90 transition-transform">
+                    <i class="fa-solid fa-plus text-2xl"></i>
+                </button>
+            </div>
+            <button onclick="app.switchView('merchants')" id="nav-merchants" class="flex-1 flex flex-col items-center gap-1 py-1 group">
+                <i class="fa-solid fa-store text-xl mb-0.5"></i><span class="text-[10px] font-medium">商家</span>
+            </button>
+            <button onclick="app.switchView('list')" id="nav-list" class="flex-1 flex flex-col items-center gap-1 py-1 group">
+                <i class="fa-solid fa-sliders text-xl mb-0.5"></i><span class="text-[10px] font-medium">管理</span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- 4. Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/40 z-[60] hidden justify-center items-end backdrop-blur-sm transition-opacity">
+        <div class="bg-[#F2F2F7] w-full max-w-lg rounded-t-[32px] max-h-[94vh] overflow-y-auto modal-enter shadow-2xl relative">
+            <div class="sticky top-0 bg-[#F2F2F7]/95 backdrop-blur z-20 px-5 pt-5 pb-3 flex justify-between items-center border-b border-gray-200/50">
+                <button onclick="app.closeModal()" class="text-gray-500 font-medium text-sm px-2">取消</button>
+                <h2 class="text-[17px] font-bold text-gray-900" id="modalTitle">新增規則</h2>
+                <button onclick="app.saveCampaign()" class="text-ios-blue font-bold text-sm px-2">儲存</button>
+            </div>
+
+            <form id="campaignForm" class="p-5 pb-20 space-y-6" onsubmit="return false;">
+                <!-- Info -->
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase ml-4 mb-2">基本資訊</h3>
+                    <div class="ios-input-group">
+                        <div class="ios-cell">
+                            <label class="ios-label">活動名稱</label>
+                            <input type="text" id="inpName" class="ios-input text-left font-bold" placeholder="例: 全支付週一繳費">
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">主要工具</label>
+                            <select id="inpMainTool" onchange="app.updateSubMethods()" class="ios-input ios-select font-bold text-ios-blue"></select>
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">通路類別</label>
+                            <select id="inpCategory" onchange="app.updateMerchants()" class="ios-input ios-select"></select>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white p-4 rounded-xl mb-4 shadow-sm">
+                        <label class="text-xs font-bold text-gray-400 block mb-3">付款條件 (可複選)</label>
+                        <div id="subMethodChips" class="flex flex-wrap gap-2"></div>
+                    </div>
+
+                    <div id="merchantSection" class="bg-white p-4 rounded-xl hidden shadow-sm">
+                        <div class="flex justify-between items-center mb-3">
+                            <label class="text-xs font-bold text-gray-400">指定特店回饋</label>
+                            <button onclick="app.toggleAllMerchants()" class="text-xs font-bold text-ios-blue">全選/清除</button>
+                        </div>
+                        <div id="merchantChips" class="flex flex-wrap gap-2"></div>
+                    </div>
+                </div>
+
+                <!-- Rewards (Updated for Fixed Amount & Combo) -->
+                <div>
+                    <div class="flex justify-between items-center mb-2 px-4">
+                        <h3 class="text-xs font-semibold text-gray-400 uppercase">回饋設定</h3>
+                        <div class="toggle-group w-32">
+                            <div class="toggle-btn active" id="type-rate" onclick="app.setRewardType('rate')">% 比率</div>
+                            <div class="toggle-btn" id="type-fixed" onclick="app.setRewardType('fixed')">$ 定額</div>
+                        </div>
+                    </div>
+
+                    <!-- Rate UI -->
+                    <div id="ui-rate" class="flex gap-3 mb-4">
+                        <div class="flex-1 bg-white rounded-xl p-4 text-center shadow-sm">
+                            <label class="text-xs text-gray-400 font-bold block mb-1">回饋率</label>
+                            <div class="flex justify-center items-baseline">
+                                <input type="number" id="inpRate" step="0.1" class="w-16 text-3xl font-black text-center text-ios-blue outline-none p-0 border-none bg-transparent" placeholder="0">
+                                <span class="text-sm font-bold text-gray-400">%</span>
+                            </div>
+                        </div>
+                        <div class="flex-1 bg-white rounded-xl p-4 text-center shadow-sm flex flex-col justify-center">
+                            <label class="text-xs text-gray-400 font-bold block mb-1">低消門檻</label>
+                            <input type="number" id="inpMinSpendRate" class="w-full text-lg font-bold text-center text-gray-800 outline-none p-0 border-none bg-transparent" placeholder="$0">
+                        </div>
+                    </div>
+
+                    <!-- Fixed UI -->
+                    <div id="ui-fixed" class="hidden mb-4 bg-white p-4 rounded-xl shadow-sm border border-ios-blue/30">
+                        <div class="flex items-center gap-2 text-lg font-bold justify-center text-gray-800">
+                            <span>滿</span>
+                            <input type="number" id="inpFixedThreshold" class="w-20 text-center border-b-2 border-gray-200 focus:border-ios-blue outline-none" placeholder="5000">
+                            <span>送</span>
+                            <input type="number" id="inpFixedAmount" class="w-20 text-center border-b-2 border-gray-200 focus:border-ios-blue outline-none text-ios-blue" placeholder="300">
+                        </div>
+                        <p class="text-xs text-center text-gray-400 mt-2">適用於滿額贈點、滿千送百活動</p>
+                    </div>
+
+                    <div class="ios-input-group">
+                        <div class="ios-cell">
+                            <label class="ios-label">個人上限</label>
+                            <input type="number" id="inpPersonalCap" class="ios-input" placeholder="點數 (0為無上限)">
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">重置週期</label>
+                            <select id="inpCapFreq" class="ios-input ios-select">
+                                <option value="total">活動總期間</option>
+                                <option value="monthly">每月</option>
+                                <option value="weekly">每週</option>
+                                <option value="daily">每日</option>
+                            </select>
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">總名額</label>
+                            <input type="text" id="inpTotalCap" class="ios-input" placeholder="銀行端限量 (選填)">
+                        </div>
+                        <!-- Combo Toggle -->
+                        <div class="ios-cell" onclick="app.toggleCombo()">
+                            <label class="ios-label w-auto flex-1">可疊加其他活動</label>
+                            <div class="w-12 h-7 rounded-full transition-colors relative" id="comboToggleBg">
+                                <div class="w-6 h-6 bg-white rounded-full shadow absolute top-0.5 left-0.5 transition-transform" id="comboToggleKnob"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reg & Time -->
+                <div>
+                    <h3 class="text-xs font-semibold text-gray-400 uppercase ml-4 mb-2">登錄與時間</h3>
+                    <div class="bg-white p-1.5 rounded-xl flex mb-4 shadow-sm">
+                        <button onclick="app.setRegType('none')" id="btnReg-none" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500">無需</button>
+                        <button onclick="app.setRegType('pre')" id="btnReg-pre" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500">事前</button>
+                        <button onclick="app.setRegType('post')" id="btnReg-post" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500">事後</button>
+                        <button onclick="app.setRegType('voucher')" id="btnReg-voucher" class="flex-1 py-2 text-xs font-bold rounded-lg transition-all text-gray-500">領券</button>
+                    </div>
+
+                    <div id="regTimeField" class="ios-input-group hidden animate-slide-up">
+                        <div class="ios-cell">
+                            <label class="ios-label text-ios-orange"><i class="fa-regular fa-clock mr-1"></i>搶票時間</label>
+                            <input type="time" id="inpRegTime" class="ios-input font-bold text-lg bg-transparent text-left">
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">日期備註</label>
+                            <input type="text" id="inpRegNote" class="ios-input text-left" placeholder="例: 每月1號">
+                        </div>
+                    </div>
+
+                    <div class="ios-input-group">
+                        <div class="ios-cell">
+                            <label class="ios-label">開始</label>
+                            <input type="date" id="inpStart" class="ios-input font-medium text-left">
+                        </div>
+                        <div class="ios-cell">
+                            <label class="ios-label">結束</label>
+                            <input type="date" id="inpEnd" class="ios-input font-medium text-left">
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-xl mb-4 shadow-sm">
+                        <label class="text-xs font-bold text-gray-400 block mb-2">每週循環</label>
+                        <div class="flex justify-between" id="daySelector"></div>
+                    </div>
+
+                    <div class="ios-input-group">
+                        <div class="ios-cell">
+                            <label class="ios-label">備註</label>
+                            <input type="text" id="inpNote" class="ios-input text-left" placeholder="其他注意事項...">
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="deleteBtn" onclick="app.deleteCurrent()" class="w-full py-3.5 text-ios-red font-bold bg-white rounded-xl shadow-sm hidden">刪除此活動</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Logic -->
+    <script>
+        const DB_KEY = 'paysmart_v10_final';
+        const WEEKDAYS = ['日', '一', '二', '三', '四', '五', '六'];
+        
+        const CATEGORIES = [
+            { id: 'general', name: '一般消費', icon: 'fa-credit-card' },
+            { id: 'cvs', name: '超商超市', icon: 'fa-shop' },
+            { id: 'payment', name: '繳費公用', icon: 'fa-file-invoice-dollar' },
+            { id: 'online', name: '網購電商', icon: 'fa-globe' },
+            { id: 'food', name: '美食外送', icon: 'fa-utensils' },
+            { id: 'travel', name: '交通旅遊', icon: 'fa-plane' }
+        ];
+
+        const PAYMENT_TYPES = {
+            'credit': { name: '信用卡', subs: [{id: 'physical', name: '實體卡'}, {id: 'apple', name: 'Apple/Google Pay'}, {id: 'linepay', name: '綁 LinePay'}, {id: 'jk', name: '綁 街口'}, {id: 'pxpay', name: '綁 全支付'}]},
+            'linepay': { name: 'Line Pay', subs: [{id: 'card', name: '綁定卡片'}, {id: 'balance', name: '帳戶餘額'}]},
+            'pxpay': { name: '全支付', subs: [{id: 'account', name: '連結帳戶'}, {id: 'card', name: '綁定卡片'}, {id: 'balance', name: '全支付餘額'}]},
+            'jk': { name: '街口支付', subs: [{id: 'account', name: '連結帳戶'}, {id: 'card', name: '綁定卡片'}]},
+            'icash': { name: 'icash Pay', subs: [{id: 'account', name: '連結帳戶'}, {id: 'card', name: '綁定卡片'}]},
+            'jko': { name: '悠遊付', subs: [{id: 'account', name: '連結帳戶'}, {id: 'wallet', name: '錢包餘額'}]}
+        };
+
+        const MERCHANTS_DB = {
+            'travel': ['Uber', 'Klook', 'KKday', 'Agoda', 'Booking', '高鐵', '台鐵', 'yoxi'],
+            'online': ['momo', 'PChome', '蝦皮', 'Coupang', 'Amazon', '淘寶'],
+            'food': ['UberEats', 'Foodpanda', '麥當勞', '星巴克', '肯德基', '王品'],
+            'payment': ['水費', '電費', '瓦斯', '健保', '電信費', '學雜費'],
+            'cvs': ['7-11', '全家', '萊爾富', 'OK', '全聯', '家樂福', '大潤發']
+        };
+
+        class PaySmartApp {
+            constructor() {
+                this.data = JSON.parse(localStorage.getItem(DB_KEY)) || this.getInitialData();
+                this.state = {
+                    view: 'dashboard', filterCat: 'general', dateOffset: 0, editingId: null,
+                    form: { subMethods: [], merchants: [], days: [], regType: 'none', rewardType: 'rate', isCombo: false }
+                };
+                this.init();
+            }
+
+            getInitialData() {
+                return [
+                    { 
+                        id: 1, name: '全支付週一繳費', mainTool: 'pxpay', subMethods: ['account'], category: 'payment', merchants: ['ALL'],
+                        rewardType: 'rate', rate: 1, startDate: '2026-01-01', endDate: '2026-03-31', recurrenceDays: [1], 
+                        personalCap: 50, capFrequency: 'monthly', regType: 'pre', regTime: '00:00', regNote: '1/30搶', totalCap: '限量', isCombo: false
+                    },
+                    {
+                        id: 2, name: '百貨滿千送百', mainTool: 'credit', subMethods: ['physical'], category: 'general', merchants: ['ALL'],
+                        rewardType: 'fixed', fixedThreshold: 5000, fixedAmount: 200, startDate: '2025-01-01', endDate: '2025-12-31', recurrenceDays: [],
+                        regType: 'none', isCombo: true, note: '可疊加銀行回饋'
+                    }
+                ];
+            }
+
+            init() { this.render(); }
+
+            getNow() { const d = new Date(); d.setDate(d.getDate() + parseInt(this.state.dateOffset)); return d; }
+            saveData() { localStorage.setItem(DB_KEY, JSON.stringify(this.data)); this.render(); }
+
+            render() {
+                this.renderHeader();
+                this.renderContent();
+                this.updateNav();
+            }
+
+            renderHeader() {
+                const now = this.getNow();
+                document.getElementById('headerDate').innerText = `${now.getMonth()+1}/${now.getDate()} 週${WEEKDAYS[now.getDay()]}`;
+                const titleMap = { 'dashboard': '回饋獵人', 'reminders': '搶登錄提醒', 'merchants': '商家特搜', 'list': '規則管理' };
+                document.getElementById('pageTitle').innerText = titleMap[this.state.view];
+
+                const filterBar = document.getElementById('filterBar');
+                const searchBar = document.getElementById('searchBar');
+
+                if (this.state.view === 'dashboard') {
+                    filterBar.parentElement.classList.remove('hidden'); filterBar.classList.remove('hidden'); searchBar.classList.add('hidden');
+                    filterBar.innerHTML = CATEGORIES.map(c => `
+                        <button onclick="app.setFilter('${c.id}')" class="flex-shrink-0 px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${this.state.filterCat === c.id ? 'bg-ios-dark text-white border-ios-dark' : 'bg-white text-gray-500 border-gray-200'}">${c.name}</button>
+                    `).join('');
+                } else if (this.state.view === 'list' || this.state.view === 'merchants') {
+                    filterBar.parentElement.classList.remove('hidden'); filterBar.classList.add('hidden'); searchBar.classList.remove('hidden');
+                } else {
+                    filterBar.parentElement.classList.add('hidden');
+                }
+            }
+
+            renderContent() {
+                const container = document.getElementById('mainContent');
+                const now = this.getNow();
+                let html = '';
+
+                if (this.state.view === 'dashboard') {
+                    const active = this.data.filter(c => {
+                        const dStr = now.toISOString().split('T')[0];
+                        if (dStr < c.startDate || dStr > c.endDate) return false;
+                        if (c.recurrenceDays.length > 0 && !c.recurrenceDays.includes(now.getDay())) return false;
+                        return this.state.filterCat === 'general' ? true : (c.category === this.state.filterCat || c.category === 'general');
+                    });
+                    // Sort: Stackable first, then by value
+                    active.sort((a,b) => (b.isCombo ? 1 : 0) - (a.isCombo ? 1 : 0) || (b.rate||0) - (a.rate||0));
+
+                    if (active.length > 0) html = `<div class="space-y-4 animate-slide-up">${active.map(c => this.getCardHtml(c)).join('')}</div>`;
+                    else html = `<div class="text-center py-24 text-gray-300"><i class="fa-regular fa-calendar-xmark text-5xl mb-3"></i><p class="font-bold">今日無活動</p></div>`;
+
+                } else if (this.state.view === 'reminders') {
+                    const reminders = this.data.filter(c => c.regType !== 'none' && c.regTime).sort((a,b) => a.regTime.localeCompare(b.regTime));
+                    if (reminders.length > 0) {
+                        html = `<div class="relative pl-6 space-y-6 animate-slide-up timeline">`;
+                        html += reminders.map(c => {
+                            let color = 'bg-ios-blue';
+                            if (c.regType === 'pre') color = 'bg-ios-orange';
+                            if (c.regType === 'post') color = 'bg-ios-red';
+                            return `<div class="relative pl-6">
+                                <div class="absolute left-[-5px] top-0 w-3 h-3 rounded-full ${color} ring-4 ring-[#F5F5F7]"></div>
+                                <div class="bg-white p-4 rounded-2xl shadow-card active:scale-95 transition-transform" onclick="app.edit(${c.id})">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-2xl font-black text-gray-900">${c.regTime}</span>
+                                        <span class="text-[10px] font-bold px-2 py-1 rounded bg-gray-100 text-gray-500">${c.regNote || '指定日期'}</span>
+                                    </div>
+                                    <h3 class="font-bold text-gray-800">${c.name}</h3>
+                                    <div class="mt-2 text-xs text-gray-500 flex items-center gap-1"><i class="fa-solid fa-users"></i> ${c.totalCap || '限量'}</div>
+                                </div>
+                            </div>`;
+                        }).join('');
+                        html += `</div>`;
+                    } else html = `<div class="text-center py-24 text-gray-300"><i class="fa-solid fa-bell-slash text-5xl mb-3"></i><p class="font-bold">無待辦事項</p></div>`;
+
+                } else if (this.state.view === 'merchants') {
+                    const search = (document.getElementById('searchInput').value || '').toLowerCase();
+                    html = `<div class="space-y-6 animate-slide-up">`;
+                    Object.keys(MERCHANTS_DB).forEach(catKey => {
+                        const merchants = MERCHANTS_DB[catKey].filter(m => m.toLowerCase().includes(search));
+                        if (merchants.length > 0) {
+                            html += `<div><h3 class="text-xs font-bold text-gray-400 uppercase mb-3 ml-1">${CATEGORIES.find(c=>c.id===catKey)?.name}</h3><div class="grid grid-cols-3 gap-3">
+                                ${merchants.map(m => `<div onclick="app.searchMerchant('${m}')" class="bg-white p-3 rounded-xl shadow-sm text-center font-bold text-sm text-gray-700 active:scale-95 transition-transform cursor-pointer">${m}</div>`).join('')}
+                            </div></div>`;
+                        }
+                    });
+                    html += `</div>`;
+
+                } else {
+                    const search = (document.getElementById('searchInput').value || '').toLowerCase();
+                    const filtered = this.data.filter(c => c.name.toLowerCase().includes(search) || (c.note && c.note.toLowerCase().includes(search)));
+                    if (filtered.length > 0) html = `<div class="space-y-4 animate-slide-up">${filtered.map(c => this.getCardHtml(c)).join('')}</div>`;
+                    else html = `<div class="text-center py-10 text-gray-400">找不到資料</div>`;
+                }
+                container.innerHTML = html;
+            }
+
+            getCardHtml(c) {
+                const mainTool = PAYMENT_TYPES[c.mainTool] || {name: c.mainTool, subs: []};
+                const subLabels = (c.subMethods || []).map(sId => {
+                    const sub = mainTool.subs.find(x => x.id === sId);
+                    return sub ? `<span class="badge-source ${sId.includes('account')?'badge-account':(sId.includes('balance')?'badge-balance':'badge-card')}">${sub.name}</span>` : '';
+                }).join('');
+
+                // Display Logic for Rate vs Fixed
+                let valueDisplay = '';
+                if (c.rewardType === 'fixed') {
+                    valueDisplay = `<div class="flex flex-col items-end"><span class="text-xs text-gray-400 font-bold mb-0.5">滿 ${c.fixedThreshold}</span><span class="text-xl font-black text-ios-purple">送 ${c.fixedAmount}</span></div>`;
+                } else {
+                    valueDisplay = `<div class="flex flex-col items-end"><span class="text-3xl font-black text-ios-blue tracking-tighter">${c.rate}<span class="text-sm font-bold text-gray-400 ml-0.5">%</span></span>${c.minSpend > 0 ? `<span class="text-[10px] text-ios-orange font-bold mt-1 bg-orange-50 px-1.5 rounded">滿$${c.minSpend}</span>` : ''}</div>`;
+                }
+
+                // Combo Badge
+                let comboBadge = c.isCombo ? `<div class="inline-flex items-center gap-1 bg-purple-50 text-ios-purple px-2 py-0.5 rounded text-[10px] font-bold border border-purple-100"><i class="fa-solid fa-puzzle-piece"></i> 可疊加</div>` : '';
+
+                return `
+                    <div class="bg-white p-5 rounded-[20px] shadow-card relative active:scale-[0.98] transition-transform border border-gray-100/50" onclick="app.edit(${c.id})">
+                        <div class="flex justify-between items-start">
+                            <div class="min-w-0 pr-4">
+                                <h3 class="font-bold text-gray-900 text-[16px] truncate mb-1.5">${c.name}</h3>
+                                <div class="flex flex-wrap gap-1.5 mb-2">
+                                    <span class="text-[10px] font-bold text-white bg-gray-900 px-2 py-0.5 rounded">${mainTool.name}</span>
+                                    ${subLabels}
+                                </div>
+                                <div class="flex gap-2 items-center">
+                                    ${comboBadge}
+                                    ${c.personalCap > 0 && c.rewardType !== 'fixed' ? `<p class="text-xs text-gray-400">刷 $${Math.floor(c.personalCap/(c.rate/100)).toLocaleString()} 封頂</p>` : ''}
+                                </div>
+                            </div>
+                            ${valueDisplay}
+                        </div>
+                        ${c.regType !== 'none' ? `<div class="mt-3 pt-2.5 border-t border-dashed border-gray-100 flex items-center gap-2 text-xs font-bold text-gray-500"><i class="fa-solid fa-bell text-ios-orange"></i> ${c.regNote} ${c.regTime}</div>` : ''}
+                    </div>
+                `;
+            }
+
+            switchView(v) { this.state.view = v; this.render(); }
+            updateDateOffset(v) { this.state.dateOffset = v; this.render(); }
+            setFilter(id) { this.state.filterCat = id; this.render(); }
+            handleSearch() { this.renderContent(); }
+            searchMerchant(name) { document.getElementById('searchInput').value = name; this.switchView('list'); }
+            
+            updateNav() {
+                const btns = ['dashboard', 'reminders', 'merchants', 'list'];
+                btns.forEach(b => {
+                    const el = document.getElementById(`nav-${b}`);
+                    const icon = el.querySelector('i');
+                    const label = el.querySelector('span');
+                    if(this.state.view === b) { icon.className = `fa-solid fa-${b==='dashboard'?'house':(b==='reminders'?'bell':(b==='merchants'?'store':'sliders'))} text-xl mb-0.5 text-ios-blue`; label.className = "text-[10px] font-bold text-ios-blue nav-label"; }
+                    else { icon.className = `fa-solid fa-${b==='dashboard'?'house':(b==='reminders'?'bell':(b==='merchants'?'store':'sliders'))} text-xl mb-0.5 text-gray-400`; label.className = "text-[10px] font-medium text-gray-400 nav-label"; }
+                });
+            }
+
+            // --- Form ---
+            openModal() {
+                this.state.editingId = null;
+                document.getElementById('modal').classList.remove('hidden'); document.getElementById('modal').classList.add('flex');
+                document.getElementById('modalTitle').innerText = "新增規則";
+                document.getElementById('deleteBtn').classList.add('hidden');
+                document.getElementById('campaignForm').reset(); 
+                this.state.form = { subMethods: [], merchants: ['ALL'], days: [], regType: 'none', rewardType: 'rate', isCombo: false };
+                document.getElementById('inpStart').value = new Date().toISOString().split('T')[0];
+                this.initFormUI();
+            }
+            closeModal() { document.getElementById('modal').classList.add('hidden'); document.getElementById('modal').classList.remove('flex'); }
+
+            edit(id) {
+                const c = this.data.find(x => x.id === id); if(!c) return;
+                this.openModal();
+                this.state.editingId = id;
+                document.getElementById('modalTitle').innerText = "編輯規則";
+                document.getElementById('deleteBtn').classList.remove('hidden');
+                // Fill
+                document.getElementById('inpName').value = c.name;
+                document.getElementById('inpMainTool').value = c.mainTool;
+                document.getElementById('inpCategory').value = c.category;
+                
+                // Reward State
+                this.setRewardType(c.rewardType || 'rate');
+                if (c.rewardType === 'fixed') {
+                    document.getElementById('inpFixedThreshold').value = c.fixedThreshold;
+                    document.getElementById('inpFixedAmount').value = c.fixedAmount;
+                } else {
+                    document.getElementById('inpRate').value = c.rate;
+                    document.getElementById('inpMinSpendRate').value = c.minSpend;
+                }
+                
+                document.getElementById('inpPersonalCap').value = c.personalCap || '';
+                document.getElementById('inpCapFreq').value = c.capFrequency;
+                document.getElementById('inpTotalCap').value = c.totalCap;
+                document.getElementById('inpRegTime').value = c.regTime;
+                document.getElementById('inpRegNote').value = c.regNote || '';
+                document.getElementById('inpStart').value = c.startDate;
+                document.getElementById('inpEnd').value = c.endDate;
+                document.getElementById('inpNote').value = c.note;
+                
+                this.state.form = {
+                    subMethods: c.subMethods || [],
+                    merchants: c.merchants || ['ALL'],
+                    days: c.recurrenceDays || [],
+                    regType: c.regType,
+                    isCombo: c.isCombo || false
+                };
+                this.initFormUI();
+            }
+
+            initFormUI() {
+                const mainTool = document.getElementById('inpMainTool');
+                const catSel = document.getElementById('inpCategory');
+                mainTool.innerHTML = Object.entries(PAYMENT_TYPES).map(([k,v]) => `<option value="${k}">${v.name}</option>`).join('');
+                if (this.state.editingId) mainTool.value = this.data.find(x=>x.id===this.state.editingId).mainTool;
+                catSel.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+                if (this.state.editingId) catSel.value = this.data.find(x=>x.id===this.state.editingId).category;
+
+                this.updateSubMethods(); this.updateMerchants(); this.renderDays(); this.setRegType(this.state.form.regType); this.renderComboToggle();
+            }
+
+            updateSubMethods() {
+                const key = document.getElementById('inpMainTool').value;
+                const subs = PAYMENT_TYPES[key].subs;
+                if (!this.state.editingId && key !== this.lastTool) this.state.form.subMethods = [];
+                this.lastTool = key;
+                document.getElementById('subMethodChips').innerHTML = subs.map(s => `<div class="chip ${this.state.form.subMethods.includes(s.id) ? 'active' : ''}" onclick="app.toggleSub('${s.id}')">${s.name}</div>`).join('');
+            }
+            toggleSub(id) {
+                const arr = this.state.form.subMethods;
+                this.state.form.subMethods = arr.includes(id) ? arr.filter(x => x !== id) : [...arr, id];
+                this.updateSubMethods();
+            }
+
+            updateMerchants() {
+                const cat = document.getElementById('inpCategory').value;
+                const list = MERCHANTS_DB[cat] || [];
+                const sec = document.getElementById('merchantSection');
+                if (list.length > 0) {
+                    sec.classList.remove('hidden');
+                    document.getElementById('merchantChips').innerHTML = list.map(m => `<div class="chip ${this.state.form.merchants.includes(m) ? 'active' : ''}" onclick="app.toggleMerchant('${m}')">${m}</div>`).join('');
+                } else sec.classList.add('hidden');
+            }
+            toggleMerchant(name) {
+                this.state.form.merchants = this.state.form.merchants.filter(x => x !== 'ALL');
+                this.state.form.merchants = this.state.form.merchants.includes(name) ? this.state.form.merchants.filter(x=>x!==name) : [...this.state.form.merchants, name];
+                this.updateMerchants();
+            }
+            toggleAllMerchants() { this.state.form.merchants = ['ALL']; this.updateMerchants(); }
+
+            renderDays() {
+                document.getElementById('daySelector').innerHTML = WEEKDAYS.map((d, i) => `<div class="w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold transition-all cursor-pointer select-none border ${this.state.form.days.includes(i) ? 'bg-ios-dark text-white border-ios-dark' : 'bg-white text-gray-400 border-gray-200'}" onclick="app.toggleDay(${i})">${d}</div>`).join('');
+            }
+            toggleDay(i) {
+                const arr = this.state.form.days;
+                this.state.form.days = arr.includes(i) ? arr.filter(x=>x!==i) : [...arr, i];
+                this.renderDays();
+            }
+
+            setRegType(type) {
+                this.state.form.regType = type;
+                document.getElementById('regTimeField').classList.toggle('hidden', type === 'none');
+                ['none', 'pre', 'post', 'voucher'].forEach(t => {
+                    const btn = document.getElementById(`btnReg-${t}`);
+                    if (t === type) {
+                        let cls = 'flex-1 py-2 text-xs font-bold rounded-lg transition-all text-white shadow-sm ';
+                        if(t==='none') cls+='bg-gray-400'; if(t==='pre') cls+='bg-ios-orange'; if(t==='post') cls+='bg-ios-red'; if(t==='voucher') cls+='bg-ios-blue';
+                        btn.className = cls;
+                    } else btn.className = 'flex-1 py-2 text-xs font-bold rounded-lg transition-all bg-white text-gray-400 border border-gray-200';
+                });
+            }
+
+            setRewardType(type) {
+                this.state.form.rewardType = type;
+                document.getElementById('type-rate').className = `toggle-btn ${type === 'rate' ? 'active' : ''}`;
+                document.getElementById('type-fixed').className = `toggle-btn ${type === 'fixed' ? 'active' : ''}`;
+                document.getElementById('ui-rate').classList.toggle('hidden', type === 'fixed');
+                document.getElementById('ui-fixed').classList.toggle('hidden', type === 'rate');
+            }
+
+            toggleCombo() {
+                this.state.form.isCombo = !this.state.form.isCombo;
+                this.renderComboToggle();
+            }
+            renderComboToggle() {
+                const bg = document.getElementById('comboToggleBg');
+                const knob = document.getElementById('comboToggleKnob');
+                if (this.state.form.isCombo) {
+                    bg.className = "w-12 h-7 rounded-full transition-colors relative bg-ios-green";
+                    knob.className = "w-6 h-6 bg-white rounded-full shadow absolute top-0.5 right-0.5 transition-transform";
+                } else {
+                    bg.className = "w-12 h-7 rounded-full transition-colors relative bg-gray-300";
+                    knob.className = "w-6 h-6 bg-white rounded-full shadow absolute top-0.5 left-0.5 transition-transform";
+                }
+            }
+
+            saveCampaign() {
+                const isFixed = this.state.form.rewardType === 'fixed';
+                const formData = {
+                    id: this.state.editingId || Date.now(),
+                    name: document.getElementById('inpName').value,
+                    mainTool: document.getElementById('inpMainTool').value,
+                    subMethods: this.state.form.subMethods,
+                    category: document.getElementById('inpCategory').value,
+                    merchants: this.state.form.merchants.length ? this.state.form.merchants : ['ALL'],
+                    
+                    rewardType: this.state.form.rewardType,
+                    rate: isFixed ? 0 : parseFloat(document.getElementById('inpRate').value)||0,
+                    minSpend: isFixed ? 0 : parseFloat(document.getElementById('inpMinSpendRate').value)||0,
+                    fixedThreshold: isFixed ? parseFloat(document.getElementById('inpFixedThreshold').value)||0 : 0,
+                    fixedAmount: isFixed ? parseFloat(document.getElementById('inpFixedAmount').value)||0 : 0,
+                    
+                    personalCap: parseFloat(document.getElementById('inpPersonalCap').value)||0,
+                    capFrequency: document.getElementById('inpCapFreq').value,
+                    totalCap: document.getElementById('inpTotalCap').value,
+                    isCombo: this.state.form.isCombo,
+                    
+                    regType: this.state.form.regType,
+                    regTime: document.getElementById('inpRegTime').value,
+                    regNote: document.getElementById('inpRegNote').value,
+                    startDate: document.getElementById('inpStart').value,
+                    endDate: document.getElementById('inpEnd').value,
+                    recurrenceDays: this.state.form.days,
+                    note: document.getElementById('inpNote').value
+                };
+
+                if (this.state.editingId) {
+                    const idx = this.data.findIndex(x => x.id === this.state.editingId);
+                    this.data[idx] = formData;
+                } else this.data.push(formData);
+                
+                this.saveData(); this.closeModal();
+            }
+
+            deleteCurrent() {
+                if(confirm('確定刪除？')) { this.data = this.data.filter(x => x.id !== this.state.editingId); this.saveData(); this.closeModal(); }
+            }
+        }
+
+        const app = new PaySmartApp();
+        function saveCampaign(e) { e.preventDefault(); app.saveCampaign(); }
+    </script>
+</body>
+</html>
